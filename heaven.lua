@@ -44,40 +44,41 @@ local LegendaryCrystalList = {
     "Blossom Jelly", "Bioluminescent Octopus"
 }
 
--- // DATABASE GAMBAR IKAN (Discord CDN) //
+-- // DATABASE GAMBAR IKAN (GitHub CDN) //
 local FishImageURL = {
-    ["King Crab"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483426907549728899/image.png",
-    ["Megalodon"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483437881858195659/image.png",
-    ["Crystal Crab"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483415981387939942/image.png",
-    ["Orca"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483416163533717594/image.png",
-    ["Eerie Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483423466085683361/image.png",
-    ["Monster Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483423730142150838/image.png",
-    ["Thin Armored Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483424035961307156/image.png",
-    ["Great Whale"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483426441646571650/image.png",
-    ["Frostborn Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483426673293787229/image.png",
-    ["Cryoshade Glider"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431119784382474/image.png",
-    ["Robot Kraken"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431163648409631/image.png",
-    ["Depthseeker Ray"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431201933889628/image.png",
-    ["Giant Squid"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431244762185839/image.png",
-    ["Blob Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431335870857296/image.png",
-    ["Ghost Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431374844199024/image.png",
-    ["Worm Fish"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431413507424376/image.png",
-    ["Cosmic Mutant Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431450433949830/image.png",
-    ["Skeleton Narwhal"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431489042387044/image.png",
-    ["Mosasaur Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431668793475206/image.png",
-    ["Bone Whale"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431947207315646/image.png",
-    ["Elshark Gran Maja"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483431990605905930/image.png",
-    ["Gladiator Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483432063964287137/image.png",
-    ["Pirate Megalodon"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483432120704700426/image.png",
-    ["Cursed Kraken"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483432189621436437/image.png",
-    ["Elpirate Gran Maja"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483432239944433684/image.png",
-    ["Queen Crab"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483435005874143313/image.png",
-    ["Ancient Whale"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483435122014556230/image.png",
-    ["Ancient Lochness Monster"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483435185616846969/image.png",
-    ["Ancient Magma Whale"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483437928540672112/image.png",
-    ["Lochness Monster"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483437978754879558/image.png",
-    ["Leviathan"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483442676010582126/image.png",
-    ["Rainbow Comet Shark"] = "https://cdn.discordapp.com/attachments/1483415954309517322/1483442773318439106/image.png",
+    ["Monster Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Monster%20Shark.png",
+    ["Megalodon"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Megalodon.png",
+    ["Ancient Lochness Monster"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ancient%20Lochness%20Monster.png",
+    ["Ancient Magma Whale"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ancient%20Magma%20Whale.png",
+    ["Ancient Whale"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ancient%20Whale.png",
+    ["Cosmic Mutant Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Cosmic%20Mutant%20Shark.png",
+    ["Cryoshade Glider"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Cryoshade%20Glider.png",
+    ["Crystal Crab"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Crystal%20Crab.png",
+    ["Cursed Kraken"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Cursed%20Kraken.png",
+    ["Depthseeker Ray"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Depthseeker%20Ray.png",
+    ["Eerie Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Eerie%20Shark.png",
+    ["Elpirate Gran Maja"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Elpirate%20Gran%20Maja.png",
+    ["Elshark Gran Maja"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Elshark%20Gran%20Maja.png",
+    ["Frostborn Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Frostborn%20Shark.png",
+    ["Ghost Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ghost%20Shark.png",
+    ["Giant Squid"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Giant%20Squid.png",
+    ["Gladiator Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Gladiator%20Shark.png",
+    ["Great Whale"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Great%20Whale.png",
+    ["King Crab"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/King%20Crab.png",
+    ["King Jelly"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/King%20Jelly.png",
+    ["Leviathan"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Leviathan.png",
+    ["Lochness Monster"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Lochness%20Monster.png",
+    ["Mosasaur Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Mosasaur%20Shark.png",
+    ["Orca"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Orca.png",
+    ["Pirate Megalodon"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Pirate%20Megalodon.png",
+    ["Queen Crab"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Queen%20Crab.png",
+    ["Rainbow Comet Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Rainbow%20Comet%20Shark.png",
+    ["Robot Kraken"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Robot%20Kraken.png",
+    ["Ruby"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ruby%20Gemstone.png",
+    ["Sea Eater"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Sea%20Eater.png",
+    ["Skeleton Narwhal"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Skeleton%20Narwhal.png",
+    ["Thin Armored Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Thin%20Armor%20Shark.png",
+    ["Worm Fish"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Worm%20Fish.png",
 }
 
 -- // CACHE TAMBAHAN DARI BACKPACK MONITOR //
@@ -202,7 +203,7 @@ local function CheckAndSend(rawMsg)
     if not data then return end
 
     local targetPlayer = Players:FindFirstChild(data.player)
-    local avatarUrl = targetPlayer and (PROXY .. "/avatar/" .. tostring(targetPlayer.UserId)) or nil
+    local avatarUrl = targetPlayer and ("https://www.roblox.com/headshot-thumbnail/image?userId=" .. tostring(targetPlayer.UserId) .. "&width=420&height=420&format=png") or nil
 
     -- // CEK LEGENDARY CRYSTALIZED (prioritas tertinggi) //
     local legendaryBase = FindLegendaryCrystal(data.fish)
@@ -311,7 +312,7 @@ local function StartMonitoring()
         task.spawn(function()
             local pName = player.Name
             local pId = player.UserId
-            local avatarUrl = PROXY .. "/avatar/" .. tostring(pId)
+            local avatarUrl = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. tostring(pId) .. "&width=420&height=420&format=png"
             SendWebhook("👋 PLAYER LEFT SERVER", nil, 16729344, {
                 {["name"] = "Username", ["value"] = "**" .. pName .. "**",                        ["inline"] = true},
                 {["name"] = "Total",    ["value"] = "👥 " .. tostring(#Players:GetPlayers() - 1), ["inline"] = true}
@@ -488,11 +489,14 @@ local function CreateUI()
     inputBox.ClearTextOnFocus = false
     inputBox.BorderSizePixel = 0
     inputBox.Text = ""
+    inputBox.TextXAlignment = Enum.TextXAlignment.Left
+    inputBox.ClipsDescendants = true
     inputBox.Parent = frame
     local inputCorner = Instance.new("UICorner", inputBox)
     inputCorner.CornerRadius = UDim.new(0, 6)
     local inputPad = Instance.new("UIPadding", inputBox)
     inputPad.PaddingLeft = UDim.new(0, 8)
+    inputPad.PaddingRight = UDim.new(0, 8)
 
     -- Start button
     local startBtn = Instance.new("TextButton")
