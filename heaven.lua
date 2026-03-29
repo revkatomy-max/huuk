@@ -353,8 +353,8 @@ local function StartMonitoring()
     HookChat()
     for _, p in ipairs(Players:GetPlayers()) do
         WatchForFish(p)
-        -- Cache avatar semua player yang sudah ada
         AvatarCache[p.UserId] = PROXY .. "/avatar/" .. tostring(p.UserId) .. "?t=" .. tostring(os.time())
+        PlayerStats[p.UserId] = { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil }
     end
     Players.PlayerAdded:Connect(function(player)
         if not SCRIPT_ACTIVE then return end
@@ -383,9 +383,9 @@ local function StartMonitoring()
                 {["name"] = "Total",    ["value"] = "👥 " .. tostring(#Players:GetPlayers() - 1), ["inline"] = true}
             }, nil, avatarUrl)
 
-            -- Kirim stats player
-            local stats = PlayerStats[pId]
-            if stats then
+            -- Kirim stats player (selalu kirim)
+            local stats = PlayerStats[pId] or { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil }
+            do
                 -- Hitung durasi sesi
                 local duration = os.time() - stats.joinTime
                 local mins = math.floor(duration / 60)
@@ -408,19 +408,16 @@ local function StartMonitoring()
                     table.insert(secretLines, fishName .. " (" .. count .. "x)")
                 end
                 if #secretLines > 0 then
-                    secretStr = table.concat(secretLines, "
-")
+                    secretStr = table.concat(secretLines, ", ")
                 end
 
                 task.wait(0.5)
                 SendWebhook("📊 PLAYER STATS", nil, 9807270, {
-                    {["name"] = "👤 Username",        ["value"] = "**" .. pName .. "**",  ["inline"] = true},
-                    {["name"] = "⏱️ Durasi Sesi",     ["value"] = durationStr,            ["inline"] = true},
-                    {["name"] = "🐟 Total Catch",     ["value"] = tostring(stats.catchCount) .. " ikan", ["inline"] = true},
-                    {["name"] = "🕐 Last Fish",       ["value"] = lastFishStr,            ["inline"] = true},
-                    {["name"] = "🏆 Secret Caught",   ["value"] = "```
-" .. secretStr .. "
-```", ["inline"] = false},
+                    {["name"] = "👤 Username",      ["value"] = "**" .. pName .. "**",                    ["inline"] = true},
+                    {["name"] = "⏱️ Durasi Sesi",   ["value"] = durationStr,                              ["inline"] = true},
+                    {["name"] = "🐟 Total Catch",   ["value"] = tostring(stats.catchCount) .. " ikan",    ["inline"] = true},
+                    {["name"] = "🕐 Last Fish",     ["value"] = lastFishStr,                              ["inline"] = true},
+                    {["name"] = "🏆 Secret Caught", ["value"] = secretStr,                                ["inline"] = false},
                 }, nil, avatarUrl)
                 PlayerStats[pId] = nil
             end
