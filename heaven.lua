@@ -372,54 +372,63 @@ local function StartMonitoring()
     end)
     Players.PlayerRemoving:Connect(function(player)
         if not SCRIPT_ACTIVE then return end
+
+        -- Simpan semua data dulu sebelum player hilang
+        local pName = player.Name
+        local pId = player.UserId
+        local avatarUrl = AvatarCache[pId] or (PROXY .. "/avatar/" .. tostring(pId) .. "?t=" .. tostring(os.time()))
+        local stats = PlayerStats[pId] or { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil }
+        local totalNow = #Players:GetPlayers() - 1
+
+        AvatarCache[pId] = nil
+        PlayerStats[pId] = nil
+
+        -- Hitung durasi sesi
+        local duration = os.time() - stats.joinTime
+        local durationStr = math.floor(duration / 60) .. "m " .. (duration % 60) .. "s"
+
+        -- Last fish time
+        local lastFishStr = "Tidak ada"
+        if stats.lastFishTime then
+            local diff = os.time() - stats.lastFishTime
+            lastFishStr = math.floor(diff / 60) .. "m " .. (diff % 60) .. "s yang lalu"
+        end
+
+        -- Format secret list
+        local secretLines = {}
+        for fishName, count in pairs(stats.secretList) do
+            table.insert(secretLines, fishName .. " (" .. count .. "x)")
+        end
+        local secretStr = #secretLines > 0 and table.concat(secretLines, ", ") or "Tidak ada"
+
+        -- Kirim leave notif
+        SendWebhook("👋 PLAYER LEFT SERVER", nil, 16729344, {
+            {["name"] = "Username", ["value"] = "**" .. pName .. "**",   ["inline"] = true},
+            {["name"] = "Total",    ["value"] = "👥 " .. tostring(totalNow), ["inline"] = true}
+        }, nil, avatarUrl)
+
+        -- Kirim stats langsung di task.spawn terpisah
         task.spawn(function()
-            local pName = player.Name
-            local pId = player.UserId
-            -- Ambil dari cache dulu, fallback ke URL langsung
-            local avatarUrl = AvatarCache[pId] or (PROXY .. "/avatar/" .. tostring(pId) .. "?t=" .. tostring(os.time()))
-            AvatarCache[pId] = nil -- bersihkan cache
-            SendWebhook("👋 PLAYER LEFT SERVER", nil, 16729344, {
-                {["name"] = "Username", ["value"] = "**" .. pName .. "**",                        ["inline"] = true},
-                {["name"] = "Total",    ["value"] = "👥 " .. tostring(#Players:GetPlayers() - 1), ["inline"] = true}
+            task.wait(0.3)
+            SendWebhook("📊 PLAYER STATS", nil, 9807270, {
+                {["name"] = "👤 Username",      ["value"] = "**" .. pName .. "**",                 ["inline"] = true},
+                {["name"] = "⏱️ Durasi Sesi",   ["value"] = durationStr,                           ["inline"] = true},
+                {["name"] = "🐟 Total Catch",   ["value"] = tostring(stats.catchCount) .. " ikan", ["inline"] = true},
+                {["name"] = "🕐 Last Fish",     ["value"] = lastFishStr,                           ["inline"] = true},
+                {["name"] = "🏆 Secret Caught", ["value"] = secretStr,                             ["inline"] = false},
             }, nil, avatarUrl)
+        end)
 
-            -- Kirim stats player (selalu kirim)
-            local stats = PlayerStats[pId] or { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil }
-            do
-                -- Hitung durasi sesi
-                local duration = os.time() - stats.joinTime
-                local mins = math.floor(duration / 60)
-                local secs = duration % 60
-                local durationStr = mins .. "m " .. secs .. "s"
-
-                -- Last fish time
-                local lastFishStr = "Tidak ada"
-                if stats.lastFishTime then
-                    local diff = os.time() - stats.lastFishTime
-                    local lm = math.floor(diff / 60)
-                    local ls = diff % 60
-                    lastFishStr = lm .. "m " .. ls .. "s yang lalu"
-                end
-
-                -- Format secret list
-                local secretStr = "Tidak ada"
-                local secretLines = {}
-                for fishName, count in pairs(stats.secretList) do
-                    table.insert(secretLines, fishName .. " (" .. count .. "x)")
-                end
-                if #secretLines > 0 then
-                    secretStr = table.concat(secretLines, ", ")
-                end
-
-                task.wait(0.5)
-                SendWebhook("📊 PLAYER STATS", nil, 9807270, {
-                    {["name"] = "👤 Username",      ["value"] = "**" .. pName .. "**",                    ["inline"] = true},
-                    {["name"] = "⏱️ Durasi Sesi",   ["value"] = durationStr,                              ["inline"] = true},
-                    {["name"] = "🐟 Total Catch",   ["value"] = tostring(stats.catchCount) .. " ikan",    ["inline"] = true},
-                    {["name"] = "🕐 Last Fish",     ["value"] = lastFishStr,                              ["inline"] = true},
-                    {["name"] = "🏆 Secret Caught", ["value"] = secretStr,                                ["inline"] = false},
-                }, nil, avatarUrl)
-                PlayerStats[pId] = nil
+        -- Timer 10 menit tidak kembali
+        LeaveTimers[pId] = true
+        task.spawn(function()
+            task.wait(600)
+            if LeaveTimers[pId] then
+                LeaveTimers[pId] = nil
+                SendWebhook("⏰ PLAYER TIDAK KEMBALI", nil, 16711680, {
+                    {["name"] = "Username", ["value"] = "**" .. pName .. "**",             ["inline"] = true},
+                    {["name"] = "Info",     ["value"] = "Tidak kembali selama **10 menit**", ["inline"] = true}
+                }, nil, nil)
             end
         end)
     end)
