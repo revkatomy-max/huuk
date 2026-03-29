@@ -10,32 +10,16 @@ local TweenService = game:GetService("TweenService")
 
 -- // CONFIGURATION //
 local WEBHOOK_URL = ""
-local WEBHOOK_AVATAR = ""
+local WEBHOOK_AVATAR = "" -- isi dengan URL gambar PNG kamu
 local PROXY = "https://square-haze-a007.remediashop.workers.dev"
 local SCRIPT_ACTIVE = false
-
--- // KEY SYSTEM //
-local VALID_KEYS = {
-    "BLOXGANK-0101-9999-1998", -- ganti dengan key buatanmu
-    "BLOXGANK-0000-1111-2222",
-    "BLOXGANK-1234-5678-9012",
-}
-local KEY_VERIFIED = false
-
-local function IsValidKey(inputKey)
-    local trimmed = inputKey:match("^%s*(.-)%s*$")
-    for _, k in ipairs(VALID_KEYS) do
-        if trimmed == k then return true end
-    end
-    return false
-end
 
 -- // DATABASE NAMA SECRET FISH //
 local SecretFishList = {
     "Crystal Crab", "Orca", "Zombie Shark", "Zombie Megalodon", "Dead Zombie Shark",
     "Blob Shark", "Ghost Shark", "Skeleton Narwhal", "Ghost Worm Fish", "Worm Fish",
     "Megalodon", "1x1x1x1 Comet Shark", "Bloodmoon Whale", "Lochness Monster",
-    "Monster Shark", "Eerie Shark", "Great Whale", "Frostborn Shark", "Thin Armor Shark",
+    "Monster Shark", "Eerie Shark", "Great Whale", "Frostborn Shark", "Thin Armored Shark",
     "Scare", "Queen Crab", "King Crab", "Cryoshade Glider", "Panther Eel",
     "Giant Squid", "Depthseeker Ray", "Robot Kraken", "Mosasaur Shark", "King Jelly",
     "Bone Whale", "Elshark Gran Maja", "Elpirate Gran Maja", "Ancient Whale",
@@ -43,24 +27,39 @@ local SecretFishList = {
     "ElRetro Gran Maja", "Strawberry Choc Megalodon", "Krampus Shark",
     "Emerald Winter Whale", "Winter Frost Shark", "Icebreaker Whale", "Leviathan",
     "Pirate Megalodon", "Viridis Lurker", "Cursed Kraken", "Ancient Magma Whale",
-    "Rainbow Comet Shark", "Love Nessie", "Broken Heart Nessie", "Mutant Runic Koi",
+    "Rainbow Comet Shark", "Love Nessie", "Broken Heart Nessie",
+    "Mutant Runic Koi", "Ketupat Whale", "Cosmic Mutant Shark",
+    "Bonemaw Tyrant",
+    -- Forgotten Tier
+    "Sea Eater", "Thunderzilla"
 }
 
-local ForgottenList = { "Sea Eater" }
+-- // DATABASE FORGOTTEN TIER //
+local ForgottenList = {
+    "Sea Eater", "Thunderzilla"
+}
+
+-- // DATABASE RUBY GEMSTONE //
 local RubyList = { "Ruby" }
+
+-- // DATABASE LEGENDARY (khusus mutasi Crystalized) //
 local LegendaryCrystalList = {
     "Blue Sea Dragon", "Star Snail", "Cute Dumbo",
     "Blossom Jelly", "Bioluminescent Octopus"
 }
 
+-- // DATABASE GAMBAR IKAN (GitHub CDN) //
 local FishImageURL = {
     ["Monster Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Monster%20Shark.png",
     ["Megalodon"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Megalodon.png",
     ["Ancient Lochness Monster"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ancient%20Lochness%20Monster.png",
     ["Ancient Magma Whale"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ancient%20Magma%20Whale.png",
     ["Ancient Whale"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ancient%20Whale.png",
+    ["Bloodmoon Whale"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Bloodmoon%20Whale.png",
     ["Blob Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Blob%20Shark.png",
+    ["Bonemaw Tyrant"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Bonemaw%20Tyrant.png",
     ["Bone Whale"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Bone%20Whale.png",
+    ["Cosmic Mutant Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Cosmic%20Mutant%20Shark.png",
     ["Cryoshade Glider"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Cryoshade%20Glider.png",
     ["Crystal Crab"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Crystal%20Crab.png",
     ["Cursed Kraken"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Cursed%20Kraken.png",
@@ -73,6 +72,7 @@ local FishImageURL = {
     ["Giant Squid"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Giant%20Squid.png",
     ["Gladiator Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Gladiator%20Shark.png",
     ["Great Whale"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Great%20Whale.png",
+    ["Ketupat Whale"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ketupat%20Whale.png",
     ["King Crab"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/King%20Crab.png",
     ["King Jelly"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/King%20Jelly.png",
     ["Leviathan"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Leviathan.png",
@@ -87,12 +87,23 @@ local FishImageURL = {
     ["Ruby"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ruby%20Gemstone.png",
     ["Sea Eater"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Sea%20Eater.png",
     ["Skeleton Narwhal"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Skeleton%20Narwhal.png",
-    ["Thin Armor Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Thin%20Armor%20Shark.png",
+    ["Thin Armored Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Thin%20Armor%20Shark.png",
+    ["Thunderzilla"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Thunderzilla.png",
     ["Worm Fish"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Worm%20Fish.png",
 }
 
+-- // CACHE TAMBAHAN DARI BACKPACK MONITOR //
 local FishImageCache = {}
+
+-- // CACHE AVATAR PLAYER (simpan sebelum player leave) //
 local AvatarCache = {}
+
+-- // TIMER PLAYER TIDAK BALIK (10 menit) //
+local LeaveTimers = {}
+
+-- // PLAYER STATS TRACKER //
+-- key = userId, value = { catchCount, secretList, joinTime, lastFishTime }
+local PlayerStats = {}
 
 -- // WEBHOOK SENDER //
 local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl)
@@ -124,10 +135,12 @@ local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl
     end)
 end
 
+-- // STRIP HTML TAGS //
 local function StripTags(str)
     return string.gsub(str, "<[^>]+>", "")
 end
 
+-- // CEK SECRET FISH + SUPPORT MUTASI //
 local function FindSecretFish(fishName)
     local lower = string.lower(fishName)
     for _, baseName in ipairs(SecretFishList) do
@@ -144,15 +157,19 @@ local function FindSecretFish(fishName)
     return nil, nil
 end
 
+-- // CEK RUBY GEMSTONE (harus ada mutasi "Gemstone") //
 local function FindRuby(fishName)
     local lower = string.lower(fishName)
+    -- Harus mengandung "ruby" DAN "gemstone"
     if not string.find(lower, "ruby") then return nil end
     if not string.find(lower, "gemstone") then return nil end
     return "Ruby"
 end
 
+-- // CEK LEGENDARY CRYSTALIZED //
 local function FindLegendaryCrystal(fishName)
     local lower = string.lower(fishName)
+    -- Harus ada kata "crystalized" di nama
     if not string.find(lower, "crystalized") then return nil end
     for _, name in ipairs(LegendaryCrystalList) do
         if string.find(lower, string.lower(name), 1, true) then
@@ -162,6 +179,7 @@ local function FindLegendaryCrystal(fishName)
     return nil
 end
 
+-- // AMBIL IMAGE DARI TOOL //
 local function GetFishImageId(item)
     for _, desc in ipairs(item:GetDescendants()) do
         local ok, val = pcall(function()
@@ -179,6 +197,7 @@ local function GetFishImageId(item)
     return nil
 end
 
+-- // PARSE CHAT SERVER //
 local function ParseChat(rawMsg)
     local msg = StripTags(rawMsg)
     msg = string.gsub(msg, "^%[Server%]:%s*", "")
@@ -197,6 +216,7 @@ local function ParseChat(rawMsg)
     return { player = playerName, fish = fishFull, weight = weight }
 end
 
+-- // PROSES PESAN CHAT SERVER //
 local function CheckAndSend(rawMsg)
     if not SCRIPT_ACTIVE then return end
     if not string.find(string.lower(rawMsg), "obtained") then return end
@@ -206,6 +226,17 @@ local function CheckAndSend(rawMsg)
     local targetPlayer = Players:FindFirstChild(data.player)
     local avatarUrl = targetPlayer and (PROXY .. "/avatar/" .. tostring(targetPlayer.UserId) .. "?t=" .. tostring(os.time())) or nil
 
+    -- Track stats player
+    if targetPlayer then
+        local uid = targetPlayer.UserId
+        if not PlayerStats[uid] then
+            PlayerStats[uid] = { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil }
+        end
+        PlayerStats[uid].catchCount = PlayerStats[uid].catchCount + 1
+        PlayerStats[uid].lastFishTime = os.time()
+    end
+
+    -- // CEK LEGENDARY CRYSTALIZED (prioritas tertinggi) //
     local legendaryBase = FindLegendaryCrystal(data.fish)
     if legendaryBase then
         local imageUrl = FishImageURL[legendaryBase] or (FishImageCache[legendaryBase] and (PROXY .. "/asset/" .. FishImageCache[legendaryBase])) or nil
@@ -218,6 +249,7 @@ local function CheckAndSend(rawMsg)
         return
     end
 
+    -- // CEK RUBY GEMSTONE //
     local rubyBase = FindRuby(data.fish)
     if rubyBase then
         local imageUrl = FishImageURL[rubyBase] or (FishImageCache[rubyBase] and (PROXY .. "/asset/" .. FishImageCache[rubyBase])) or nil
@@ -229,18 +261,47 @@ local function CheckAndSend(rawMsg)
         return
     end
 
+    -- // CEK SECRET / FORGOTTEN FISH //
     local baseName, mutasi = FindSecretFish(data.fish)
     if not baseName then return end
     local imageUrl = FishImageURL[baseName] or (FishImageCache[baseName] and (PROXY .. "/asset/" .. FishImageCache[baseName])) or nil
     local fishLabel = "**" .. data.fish .. "**"
     if mutasi then fishLabel = "**" .. data.fish .. "** *(mutasi: " .. baseName .. ")*" end
-    SendWebhook("🚨 SECRET FISH DETECTED!", nil, 1752220, {
-        {["name"] = "Pemain", ["value"] = "**" .. data.player .. "**", ["inline"] = true},
-        {["name"] = "Ikan",   ["value"] = fishLabel,                   ["inline"] = true},
-        {["name"] = "Berat",  ["value"] = data.weight,                 ["inline"] = true},
-    }, imageUrl, avatarUrl)
+
+    -- Cek apakah Forgotten Tier
+    local isForgotten = false
+    for _, name in ipairs(ForgottenList) do
+        if string.lower(baseName) == string.lower(name) then
+            isForgotten = true
+            break
+        end
+    end
+
+    -- Tambah ke list secret player
+    if targetPlayer then
+        local uid = targetPlayer.UserId
+        if PlayerStats[uid] then
+            local existing = PlayerStats[uid].secretList[baseName] or 0
+            PlayerStats[uid].secretList[baseName] = existing + 1
+        end
+    end
+
+    if isForgotten then
+        SendWebhook("🌟 FORGOTTEN TIER DETECTED!", nil, 16777215, {
+            {["name"] = "Pemain", ["value"] = "**" .. data.player .. "**", ["inline"] = true},
+            {["name"] = "Ikan",   ["value"] = fishLabel,                   ["inline"] = true},
+            {["name"] = "Berat",  ["value"] = data.weight,                 ["inline"] = true},
+        }, imageUrl, avatarUrl)
+    else
+        SendWebhook("🚨 SECRET FISH DETECTED!", nil, 1752220, {
+            {["name"] = "Pemain", ["value"] = "**" .. data.player .. "**", ["inline"] = true},
+            {["name"] = "Ikan",   ["value"] = fishLabel,                   ["inline"] = true},
+            {["name"] = "Berat",  ["value"] = data.weight,                 ["inline"] = true},
+        }, imageUrl, avatarUrl)
+    end
 end
 
+-- // BACKPACK MONITOR //
 local function WatchBackpack(player, bp)
     bp.ChildAdded:Connect(function(item)
         task.wait(0.1)
@@ -261,6 +322,7 @@ local function WatchForFish(player)
     end)
 end
 
+-- // HOOK CHAT SERVER //
 local function HookChat()
     if TextChatService then
         TextChatService.MessageReceived:Connect(function(msg)
@@ -278,6 +340,7 @@ local function HookChat()
     end
 end
 
+-- // STARTUP WEBHOOK //
 local function StartMonitoring()
     local allPlayers = Players:GetPlayers()
     local names = {}
@@ -290,6 +353,7 @@ local function StartMonitoring()
     HookChat()
     for _, p in ipairs(Players:GetPlayers()) do
         WatchForFish(p)
+        -- Cache avatar semua player yang sudah ada
         AvatarCache[p.UserId] = PROXY .. "/avatar/" .. tostring(p.UserId) .. "?t=" .. tostring(os.time())
     end
     Players.PlayerAdded:Connect(function(player)
@@ -297,6 +361,7 @@ local function StartMonitoring()
         task.spawn(function()
             task.wait(1)
             local avatarUrl = PROXY .. "/avatar/" .. tostring(player.UserId) .. "?t=" .. tostring(os.time())
+            -- Simpan ke cache supaya bisa dipakai saat leave
             AvatarCache[player.UserId] = avatarUrl
             SendWebhook("✅ PLAYER JOINED SERVER", nil, 65280, {
                 {["name"] = "Username", ["value"] = "**" .. player.Name .. "**",              ["inline"] = true},
@@ -310,12 +375,55 @@ local function StartMonitoring()
         task.spawn(function()
             local pName = player.Name
             local pId = player.UserId
+            -- Ambil dari cache dulu, fallback ke URL langsung
             local avatarUrl = AvatarCache[pId] or (PROXY .. "/avatar/" .. tostring(pId) .. "?t=" .. tostring(os.time()))
-            AvatarCache[pId] = nil
+            AvatarCache[pId] = nil -- bersihkan cache
             SendWebhook("👋 PLAYER LEFT SERVER", nil, 16729344, {
                 {["name"] = "Username", ["value"] = "**" .. pName .. "**",                        ["inline"] = true},
                 {["name"] = "Total",    ["value"] = "👥 " .. tostring(#Players:GetPlayers() - 1), ["inline"] = true}
             }, nil, avatarUrl)
+
+            -- Kirim stats player
+            local stats = PlayerStats[pId]
+            if stats then
+                -- Hitung durasi sesi
+                local duration = os.time() - stats.joinTime
+                local mins = math.floor(duration / 60)
+                local secs = duration % 60
+                local durationStr = mins .. "m " .. secs .. "s"
+
+                -- Last fish time
+                local lastFishStr = "Tidak ada"
+                if stats.lastFishTime then
+                    local diff = os.time() - stats.lastFishTime
+                    local lm = math.floor(diff / 60)
+                    local ls = diff % 60
+                    lastFishStr = lm .. "m " .. ls .. "s yang lalu"
+                end
+
+                -- Format secret list
+                local secretStr = "Tidak ada"
+                local secretLines = {}
+                for fishName, count in pairs(stats.secretList) do
+                    table.insert(secretLines, fishName .. " (" .. count .. "x)")
+                end
+                if #secretLines > 0 then
+                    secretStr = table.concat(secretLines, "
+")
+                end
+
+                task.wait(0.5)
+                SendWebhook("📊 PLAYER STATS", nil, 9807270, {
+                    {["name"] = "👤 Username",        ["value"] = "**" .. pName .. "**",  ["inline"] = true},
+                    {["name"] = "⏱️ Durasi Sesi",     ["value"] = durationStr,            ["inline"] = true},
+                    {["name"] = "🐟 Total Catch",     ["value"] = tostring(stats.catchCount) .. " ikan", ["inline"] = true},
+                    {["name"] = "🕐 Last Fish",       ["value"] = lastFishStr,            ["inline"] = true},
+                    {["name"] = "🏆 Secret Caught",   ["value"] = "```
+" .. secretStr .. "
+```", ["inline"] = false},
+                }, nil, avatarUrl)
+                PlayerStats[pId] = nil
+            end
         end)
     end)
 end
@@ -327,128 +435,33 @@ local function CreateUI()
     gui.ResetOnSpawn = false
     gui.Parent = (gethui and gethui()) or CoreGui
 
-    -- =====================
-    -- PAGE 1: KEY SCREEN
-    -- =====================
-    local keyFrame = Instance.new("Frame")
-    keyFrame.Name = "KeyScreen"
-    keyFrame.Size = UDim2.new(0, 320, 0, 200)
-    keyFrame.Position = UDim2.new(0.5, -160, 0.5, -100)
-    keyFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-    keyFrame.BorderSizePixel = 0
-    keyFrame.Parent = gui
-    Instance.new("UICorner", keyFrame).CornerRadius = UDim.new(0, 10)
+    -- Main Frame
+    local frame = Instance.new("Frame")
+    frame.Name = "Main"
+    frame.Size = UDim2.new(0, 300, 0, 180)
+    frame.Position = UDim2.new(0.5, -150, 0.5, -90)
+    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    frame.BorderSizePixel = 0
+    frame.Parent = gui
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
 
-    local keyStroke = Instance.new("UIStroke", keyFrame)
-    keyStroke.Color = Color3.fromRGB(0, 180, 100)
-    keyStroke.Thickness = 1.5
-
-    -- Key top bar
-    local keyTopBar = Instance.new("Frame")
-    keyTopBar.Size = UDim2.new(1, 0, 0, 38)
-    keyTopBar.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
-    keyTopBar.BorderSizePixel = 0
-    keyTopBar.Parent = keyFrame
-    Instance.new("UICorner", keyTopBar).CornerRadius = UDim.new(0, 10)
-    local keyTopFix = Instance.new("Frame", keyTopBar)
-    keyTopFix.Size = UDim2.new(1, 0, 0, 10)
-    keyTopFix.Position = UDim2.new(0, 0, 1, -10)
-    keyTopFix.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
-    keyTopFix.BorderSizePixel = 0
-
-    local keyTitle = Instance.new("TextLabel")
-    keyTitle.Text = "🔑  BLOX Gank — Key Verification"
-    keyTitle.Size = UDim2.new(1, -12, 1, 0)
-    keyTitle.Position = UDim2.new(0, 12, 0, 0)
-    keyTitle.BackgroundTransparency = 1
-    keyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    keyTitle.Font = Enum.Font.GothamBold
-    keyTitle.TextSize = 12
-    keyTitle.TextXAlignment = Enum.TextXAlignment.Left
-    keyTitle.Parent = keyTopBar
-
-    -- Key description
-    local keyDesc = Instance.new("TextLabel")
-    keyDesc.Text = "Masukkan key untuk menggunakan script ini.\nHubungi @bloxgank di Discord untuk mendapatkan key."
-    keyDesc.Size = UDim2.new(1, -24, 0, 40)
-    keyDesc.Position = UDim2.new(0, 12, 0, 46)
-    keyDesc.BackgroundTransparency = 1
-    keyDesc.TextColor3 = Color3.fromRGB(150, 150, 150)
-    keyDesc.Font = Enum.Font.Gotham
-    keyDesc.TextSize = 10
-    keyDesc.TextXAlignment = Enum.TextXAlignment.Left
-    keyDesc.TextWrapped = true
-    keyDesc.Parent = keyFrame
-
-    -- Key input
-    local keyInput = Instance.new("TextBox")
-    keyInput.PlaceholderText = "BLOXGANK-XXXX-YYYY-ZZZZ"
-    keyInput.Size = UDim2.new(1, -24, 0, 34)
-    keyInput.Position = UDim2.new(0, 12, 0, 96)
-    keyInput.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
-    keyInput.TextColor3 = Color3.fromRGB(220, 220, 220)
-    keyInput.PlaceholderColor3 = Color3.fromRGB(90, 90, 90)
-    keyInput.Font = Enum.Font.Code
-    keyInput.TextSize = 11
-    keyInput.ClearTextOnFocus = false
-    keyInput.BorderSizePixel = 0
-    keyInput.Text = ""
-    keyInput.TextXAlignment = Enum.TextXAlignment.Center
-    keyInput.Parent = keyFrame
-    Instance.new("UICorner", keyInput).CornerRadius = UDim.new(0, 6)
-    local kip = Instance.new("UIPadding", keyInput)
-    kip.PaddingLeft = UDim.new(0, 8); kip.PaddingRight = UDim.new(0, 8)
-
-    -- Key status label
-    local keyStatus = Instance.new("TextLabel")
-    keyStatus.Text = ""
-    keyStatus.Size = UDim2.new(1, -24, 0, 18)
-    keyStatus.Position = UDim2.new(0, 12, 0, 133)
-    keyStatus.BackgroundTransparency = 1
-    keyStatus.TextColor3 = Color3.fromRGB(255, 80, 80)
-    keyStatus.Font = Enum.Font.Gotham
-    keyStatus.TextSize = 10
-    keyStatus.TextXAlignment = Enum.TextXAlignment.Center
-    keyStatus.Parent = keyFrame
-
-    -- Verify button
-    local verifyBtn = Instance.new("TextButton")
-    verifyBtn.Text = "VERIFIKASI KEY"
-    verifyBtn.Size = UDim2.new(1, -24, 0, 34)
-    verifyBtn.Position = UDim2.new(0, 12, 0, 152)
-    verifyBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
-    verifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    verifyBtn.Font = Enum.Font.GothamBold
-    verifyBtn.TextSize = 12
-    verifyBtn.BorderSizePixel = 0
-    verifyBtn.Parent = keyFrame
-    Instance.new("UICorner", verifyBtn).CornerRadius = UDim.new(0, 6)
-
-    -- =====================
-    -- PAGE 2: MAIN MONITOR
-    -- =====================
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Name = "Main"
-    mainFrame.Size = UDim2.new(0, 300, 0, 190)
-    mainFrame.Position = UDim2.new(0.5, -150, 0.5, -95)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    mainFrame.BorderSizePixel = 0
-    mainFrame.Visible = false
-    mainFrame.Parent = gui
-    Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 8)
-
+    -- Top bar
     local topBar = Instance.new("Frame")
     topBar.Size = UDim2.new(1, 0, 0, 36)
     topBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     topBar.BorderSizePixel = 0
-    topBar.Parent = mainFrame
+    topBar.Parent = frame
     Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 8)
-    local topBarFix = Instance.new("Frame", topBar)
+
+    -- Fix rounded corners hanya atas
+    local topBarFix = Instance.new("Frame")
     topBarFix.Size = UDim2.new(1, 0, 0, 8)
     topBarFix.Position = UDim2.new(0, 0, 1, -8)
     topBarFix.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     topBarFix.BorderSizePixel = 0
+    topBarFix.Parent = topBar
 
+    -- Title
     local title = Instance.new("TextLabel")
     title.Text = "🎣 BLOX Gank Monitor"
     title.Size = UDim2.new(1, -80, 1, 0)
@@ -460,6 +473,7 @@ local function CreateUI()
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = topBar
 
+    -- Minimize button
     local minBtn = Instance.new("TextButton")
     minBtn.Text = "—"
     minBtn.Size = UDim2.new(0, 28, 0, 22)
@@ -472,6 +486,7 @@ local function CreateUI()
     minBtn.Parent = topBar
     Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 4)
 
+    -- Close button
     local closeBtn = Instance.new("TextButton")
     closeBtn.Text = "✕"
     closeBtn.Size = UDim2.new(0, 28, 0, 22)
@@ -484,48 +499,77 @@ local function CreateUI()
     closeBtn.Parent = topBar
     Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
 
-    -- Minimize / Close logic
+    -- Minimize logic
     local isMinimized = false
-    local fullSize = UDim2.new(0, 300, 0, 190)
+    local fullSize = UDim2.new(0, 300, 0, 180)
     local miniSize = UDim2.new(0, 300, 0, 36)
+
     minBtn.MouseButton1Click:Connect(function()
         isMinimized = not isMinimized
-        TweenService:Create(mainFrame, TweenInfo.new(0.2), {Size = isMinimized and miniSize or fullSize}):Play()
-        minBtn.Text = isMinimized and "□" or "—"
+        if isMinimized then
+            TweenService:Create(frame, TweenInfo.new(0.2), {Size = miniSize}):Play()
+            minBtn.Text = "□"
+        else
+            TweenService:Create(frame, TweenInfo.new(0.2), {Size = fullSize}):Play()
+            minBtn.Text = "—"
+        end
     end)
+
+    -- Close logic
     closeBtn.MouseButton1Click:Connect(function()
-        TweenService:Create(mainFrame, TweenInfo.new(0.15), {Size = UDim2.new(0, 300, 0, 0), BackgroundTransparency = 1}):Play()
-        task.wait(0.2); gui:Destroy()
+        TweenService:Create(frame, TweenInfo.new(0.15), {
+            Size = UDim2.new(0, 300, 0, 0),
+            BackgroundTransparency = 1
+        }):Play()
+        task.wait(0.2)
+        gui:Destroy()
     end)
-    minBtn.MouseEnter:Connect(function() TweenService:Create(minBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)}):Play() end)
-    minBtn.MouseLeave:Connect(function() TweenService:Create(minBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play() end)
-    closeBtn.MouseEnter:Connect(function() TweenService:Create(closeBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(230, 70, 70)}):Play() end)
-    closeBtn.MouseLeave:Connect(function() TweenService:Create(closeBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(200, 50, 50)}):Play() end)
+
+    -- Hover effects
+    minBtn.MouseEnter:Connect(function()
+        TweenService:Create(minBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)}):Play()
+    end)
+    minBtn.MouseLeave:Connect(function()
+        TweenService:Create(minBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
+    end)
+    closeBtn.MouseEnter:Connect(function()
+        TweenService:Create(closeBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(230, 70, 70)}):Play()
+    end)
+    closeBtn.MouseLeave:Connect(function()
+        TweenService:Create(closeBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(200, 50, 50)}):Play()
+    end)
 
     -- Draggable
     local dragging, dragStart, startPos
     topBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true; dragStart = input.Position; startPos = mainFrame.Position
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
         end
     end)
     topBar.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
     end)
     game:GetService("UserInputService").InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = input.Position - dragStart
-            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            frame.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X,
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
+            )
         end
     end)
 
-    -- Status dot
+    -- Status dot + label
     local statusDot = Instance.new("Frame")
     statusDot.Size = UDim2.new(0, 8, 0, 8)
     statusDot.Position = UDim2.new(0, 16, 0, 54)
     statusDot.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
     statusDot.BorderSizePixel = 0
-    statusDot.Parent = mainFrame
+    statusDot.Parent = frame
     Instance.new("UICorner", statusDot).CornerRadius = UDim.new(1, 0)
 
     local statusLabel = Instance.new("TextLabel")
@@ -537,26 +581,13 @@ local function CreateUI()
     statusLabel.Font = Enum.Font.Gotham
     statusLabel.TextSize = 11
     statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-    statusLabel.Parent = mainFrame
-
-    -- Key badge (tanda sudah terverifikasi)
-    local keyBadge = Instance.new("TextLabel")
-    keyBadge.Text = "🔑 Key Verified"
-    keyBadge.Size = UDim2.new(0, 100, 0, 16)
-    keyBadge.Position = UDim2.new(1, -112, 0, 50)
-    keyBadge.BackgroundColor3 = Color3.fromRGB(0, 130, 70)
-    keyBadge.TextColor3 = Color3.fromRGB(200, 255, 220)
-    keyBadge.Font = Enum.Font.GothamBold
-    keyBadge.TextSize = 9
-    keyBadge.BorderSizePixel = 0
-    keyBadge.Parent = mainFrame
-    Instance.new("UICorner", keyBadge).CornerRadius = UDim.new(0, 4)
+    statusLabel.Parent = frame
 
     -- Webhook input
     local inputBox = Instance.new("TextBox")
     inputBox.PlaceholderText = "Paste Discord Webhook URL..."
     inputBox.Size = UDim2.new(1, -24, 0, 34)
-    inputBox.Position = UDim2.new(0, 12, 0, 78)
+    inputBox.Position = UDim2.new(0, 12, 0, 74)
     inputBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     inputBox.TextColor3 = Color3.fromRGB(220, 220, 220)
     inputBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
@@ -567,43 +598,36 @@ local function CreateUI()
     inputBox.Text = ""
     inputBox.TextXAlignment = Enum.TextXAlignment.Left
     inputBox.ClipsDescendants = true
-    inputBox.Parent = mainFrame
-    Instance.new("UICorner", inputBox).CornerRadius = UDim.new(0, 6)
+    inputBox.Parent = frame
+    local inputCorner = Instance.new("UICorner", inputBox)
+    inputCorner.CornerRadius = UDim.new(0, 6)
     local inputPad = Instance.new("UIPadding", inputBox)
-    inputPad.PaddingLeft = UDim.new(0, 8); inputPad.PaddingRight = UDim.new(0, 8)
+    inputPad.PaddingLeft = UDim.new(0, 8)
+    inputPad.PaddingRight = UDim.new(0, 8)
 
     -- Start button
     local startBtn = Instance.new("TextButton")
     startBtn.Text = "START MONITORING"
     startBtn.Size = UDim2.new(1, -24, 0, 34)
-    startBtn.Position = UDim2.new(0, 12, 0, 122)
+    startBtn.Position = UDim2.new(0, 12, 0, 118)
     startBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
     startBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     startBtn.Font = Enum.Font.GothamBold
     startBtn.TextSize = 12
     startBtn.BorderSizePixel = 0
-    startBtn.Parent = mainFrame
+    startBtn.Parent = frame
     Instance.new("UICorner", startBtn).CornerRadius = UDim.new(0, 6)
 
-    -- Footer
-    local footer = Instance.new("TextLabel")
-    footer.Text = "discord @bloxgank"
-    footer.Size = UDim2.new(1, 0, 0, 16)
-    footer.Position = UDim2.new(0, 0, 1, -18)
-    footer.BackgroundTransparency = 1
-    footer.TextColor3 = Color3.fromRGB(70, 70, 70)
-    footer.Font = Enum.Font.Gotham
-    footer.TextSize = 9
-    footer.TextXAlignment = Enum.TextXAlignment.Center
-    footer.Parent = mainFrame
-
-    local stroke = Instance.new("UIStroke", mainFrame)
+    -- Stroke border
+    local stroke = Instance.new("UIStroke")
     stroke.Color = Color3.fromRGB(50, 50, 50)
     stroke.Thickness = 1
+    stroke.Parent = frame
 
-    -- Start button logic
+    -- Button logic
     startBtn.MouseButton1Click:Connect(function()
         if SCRIPT_ACTIVE then return end
+
         local webhookText = inputBox.Text
         if not webhookText:find("discord.com/api/webhooks") then
             startBtn.Text = "❌ WEBHOOK INVALID!"
@@ -613,55 +637,31 @@ local function CreateUI()
             startBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
             return
         end
+
         WEBHOOK_URL = webhookText
         SCRIPT_ACTIVE = true
+
+        -- Update UI
         statusDot.BackgroundColor3 = Color3.fromRGB(0, 220, 100)
         statusLabel.Text = "Aktif — Monitoring..."
         statusLabel.TextColor3 = Color3.fromRGB(0, 220, 100)
         startBtn.Text = "✅ MONITORING AKTIF"
         startBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         inputBox.TextEditable = false
+
         StartMonitoring()
     end)
-    startBtn.MouseEnter:Connect(function()
-        if not SCRIPT_ACTIVE then TweenService:Create(startBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(0, 210, 120)}):Play() end
-    end)
-    startBtn.MouseLeave:Connect(function()
-        if not SCRIPT_ACTIVE then TweenService:Create(startBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(0, 180, 100)}):Play() end
-    end)
 
-    -- =====================
-    -- KEY VERIFY LOGIC
-    -- =====================
-    verifyBtn.MouseButton1Click:Connect(function()
-        local inputKey = keyInput.Text
-        if IsValidKey(inputKey) then
-            KEY_VERIFIED = true
-            -- Animasi transisi
-            TweenService:Create(keyFrame, TweenInfo.new(0.25), {
-                Size = UDim2.new(0, 320, 0, 0),
-                BackgroundTransparency = 1
-            }):Play()
-            task.wait(0.3)
-            keyFrame.Visible = false
-            mainFrame.Visible = true
-            TweenService:Create(mainFrame, TweenInfo.new(0.25), {
-                Size = fullSize
-            }):Play()
-        else
-            keyStatus.Text = "❌ Key tidak valid! Hubungi @bloxgank"
-            keyInput.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
-            task.wait(2)
-            keyInput.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
-            keyStatus.Text = ""
+    -- Hover effect
+    startBtn.MouseEnter:Connect(function()
+        if not SCRIPT_ACTIVE then
+            TweenService:Create(startBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(0, 210, 120)}):Play()
         end
     end)
-
-    verifyBtn.MouseEnter:Connect(function()
-        TweenService:Create(verifyBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(0, 210, 120)}):Play()
-    end)
-    verifyBtn.MouseLeave:Connect(function()
-        TweenService:Create(verifyBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(0, 180, 100)}):Play()
+    startBtn.MouseLeave:Connect(function()
+        if not SCRIPT_ACTIVE then
+            TweenService:Create(startBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(0, 180, 100)}):Play()
+        end
     end)
 end
 
