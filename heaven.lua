@@ -10,6 +10,7 @@ local TweenService = game:GetService("TweenService")
 
 -- // CONFIGURATION //
 local WEBHOOK_URL = ""
+local WEBHOOK_STATS = "https://discord.com/api/webhooks/1487995039912038481/BqBd5GD0D6lLvE6y5rlGblGNXMl3ScQ8C40fCVXYiTy8YmbVYbbsi8yQOjvuIUNgtz2q"
 local WEBHOOK_AVATAR = "" -- isi dengan URL gambar PNG kamu
 local PROXY = "https://square-haze-a007.remediashop.workers.dev"
 local SCRIPT_ACTIVE = false
@@ -104,6 +105,32 @@ local LeaveTimers = {}
 -- // PLAYER STATS TRACKER //
 -- key = userId, value = { catchCount, secretList, joinTime, lastFishTime }
 local PlayerStats = {}
+
+-- // STATS WEBHOOK SENDER //
+local function SendStatsWebhook(title, description, color, fields, imageUrl, thumbUrl)
+    local requestFunc = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+    if not requestFunc then return end
+    local embed = {
+        ["title"] = title,
+        ["description"] = description,
+        ["color"] = color,
+        ["fields"] = fields,
+        ["footer"] = {["text"] = "BLOX Gank Stats | " .. os.date("%X")},
+        ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
+    }
+    if imageUrl then embed["image"] = {["url"] = imageUrl} end
+    if thumbUrl then embed["thumbnail"] = {["url"] = thumbUrl} end
+    task.spawn(function()
+        pcall(function()
+            requestFunc({
+                Url = WEBHOOK_STATS,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({["embeds"] = {embed}})
+            })
+        end)
+    end)
+end
 
 -- // WEBHOOK SENDER //
 local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl)
@@ -351,6 +378,47 @@ local function StartMonitoring()
         {["name"] = "Daftar Player", ["value"] = "```\n" .. table.concat(names, ", ") .. "```", ["inline"] = false}
     })
     HookChat()
+
+    -- // KIRIM STATS SEMUA PLAYER TIAP 10 MENIT //
+    task.spawn(function()
+        while SCRIPT_ACTIVE do
+            task.wait(600) -- 10 menit
+            if not SCRIPT_ACTIVE then break end
+            for _, p in ipairs(Players:GetPlayers()) do
+                local uid = p.UserId
+                local stats = PlayerStats[uid]
+                if not stats then continue end
+
+                local duration = os.time() - stats.joinTime
+                local durationStr = math.floor(duration / 60) .. "m " .. (duration % 60) .. "s"
+
+                local lastFishStr = "Tidak ada"
+                if stats.lastFishTime then
+                    local diff = os.time() - stats.lastFishTime
+                    lastFishStr = math.floor(diff / 60) .. "m " .. (diff % 60) .. "s yang lalu"
+                end
+
+                local secretLines = {}
+                for fishName, count in pairs(stats.secretList) do
+                    table.insert(secretLines, fishName .. " (" .. count .. "x)")
+                end
+                local secretStr = #secretLines > 0 and table.concat(secretLines, ", ") or "Tidak ada"
+
+                local avatarUrl = AvatarCache[uid] or (PROXY .. "/avatar/" .. tostring(uid) .. "?t=" .. tostring(os.time()))
+
+                SendStatsWebhook("📊 PLAYER STATS (10 Menit)", nil, 9807270, {
+                    {["name"] = "👤 Username",      ["value"] = "**" .. p.Name .. "**",               ["inline"] = true},
+                    {["name"] = "⏱️ Durasi Sesi",   ["value"] = durationStr,                           ["inline"] = true},
+                    {["name"] = "🐟 Total Catch",   ["value"] = tostring(stats.catchCount) .. " ikan", ["inline"] = true},
+                    {["name"] = "🕐 Last Fish",     ["value"] = lastFishStr,                           ["inline"] = true},
+                    {["name"] = "🏆 Secret Caught", ["value"] = secretStr,                             ["inline"] = false},
+                }, nil, avatarUrl)
+
+                task.wait(0.5) -- delay antar player supaya tidak spam webhook
+            end
+        end
+    end)
+
     for _, p in ipairs(Players:GetPlayers()) do
         WatchForFish(p)
         AvatarCache[p.UserId] = PROXY .. "/avatar/" .. tostring(p.UserId) .. "?t=" .. tostring(os.time())
@@ -410,7 +478,7 @@ local function StartMonitoring()
         -- Kirim stats langsung di task.spawn terpisah
         task.spawn(function()
             task.wait(0.3)
-            SendWebhook("📊 PLAYER STATS", nil, 9807270, {
+            SendStatsWebhook("📊 PLAYER STATS", nil, 9807270, {
                 {["name"] = "👤 Username",      ["value"] = "**" .. pName .. "**",                 ["inline"] = true},
                 {["name"] = "⏱️ Durasi Sesi",   ["value"] = durationStr,                           ["inline"] = true},
                 {["name"] = "🐟 Total Catch",   ["value"] = tostring(stats.catchCount) .. " ikan", ["inline"] = true},
