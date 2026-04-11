@@ -10,10 +10,38 @@ local TweenService = game:GetService("TweenService")
 
 -- // CONFIGURATION //
 local WEBHOOK_URL = ""
-local WEBHOOK_STATS = "https://discord.com/api/webhooks/1487995039912038481/BqBd5GD0D6lLvE6y5rlGblGNXMl3ScQ8C40fCVXYiTy8YmbVYbbsi8yQOjvuIUNgtz2q"
+local WEBHOOK_STATS = "https://discord.com/api/webhooks/1488003996026273893/4v2Z-a838D17SL7qn03o8s2PKX3oN2quVIui1g4GmYjrIkgnONbtQUlOGqxkLQLD5eIm"
+local WEBHOOK_FISH = "https://discord.com/api/webhooks/1488485636024307784/s0tXIAmlnx2OosodZm6FiC3Ny9YT4PzcIDFqUeHXymdVvcKOyuIRVxLPcxE7lsK1IZgb" -- khusus secret fish
+local DISCORD_ROLE_ID = "" -- role ID untuk di-tag
 local WEBHOOK_AVATAR = "" -- isi dengan URL gambar PNG kamu
 local PROXY = "https://square-haze-a007.remediashop.workers.dev"
 local SCRIPT_ACTIVE = false
+
+-- // MEMBER LIST (Roblox Username -> Discord ID) //
+-- Tambah member di sini: ["RobloxUsername"] = "DiscordID"
+local MemberList = {
+     ["Minyaktalon9990"] = "",
+     ["leale716"] = "1408658812424028182",
+     ["MasW"] = "1222390041951600640",
+     ["MomoiQu_72"] = "1445577655981310013",
+     ["momoiLagi"] = "1445577655981310013",
+     ["Deff69699"] = "",
+     ["Jkanatra1"] = "1456170246229463249",
+     ["zyr_xi"] = "1181609363236999289",
+     ["sedotanpink"] = "1406804062825091274",
+     ["w4terhyacinth"] = "1309945598409048076",
+     ["oliverBMTH98"] = "",
+     ["arkaaaa_45"] = "1438046472179548190",
+     ["rexlepwz"] = "1205780304753725492",
+     ["cecilionz1"] = "1404117087303110877",
+     ["zeylith162"] = "1284490745515999282",
+     ["sparklingsummer9"] = "1127667957527490640",
+     ["RullGOD25"] = "",
+     ["flucidious"] = "279691238494699530",
+     ["minxing_kim"] = "484295718765461515",
+     ["fzallzall"] = "462346945441038337",
+     
+}
 
 -- // DATABASE NAMA SECRET FISH //
 local SecretFishList = {
@@ -29,7 +57,7 @@ local SecretFishList = {
     "Emerald Winter Whale", "Winter Frost Shark", "Icebreaker Whale", "Leviathan",
     "Pirate Megalodon", "Viridis Lurker", "Cursed Kraken", "Ancient Magma Whale",
     "Rainbow Comet Shark", "Love Nessie", "Broken Heart Nessie",
-    "Mutant Runic Koi", "Ketupat Whale", "Cosmic Mutant Shark",
+    "Mutant Runic Koi", "Ketupat Whale", "Cosmic Mutant Shark", "Strawberry Orca",
     "Bonemaw Tyrant",
     -- Forgotten Tier
     "Sea Eater", "Thunderzilla"
@@ -38,6 +66,65 @@ local SecretFishList = {
 -- // DATABASE FORGOTTEN TIER //
 local ForgottenList = {
     "Sea Eater", "Thunderzilla"
+}
+
+
+-- // DATABASE CHANCE IKAN SECRET //
+local FishChanceData = {
+    ["Crystal Crab"] = "1 in 750K",
+    ["Orca"] = "1 in 1.5M",
+    ["Zombie Shark"] = "1 in 250K",
+    ["Zombie Megalodon"] = "1 in 4M",
+    ["Dead Zombie Shark"] = "1 in 500K",
+    ["Blob Shark"] = "1 in 250K",
+    ["Ghost Shark"] = "1 in 500K",
+    ["Skeleton Narwhal"] = "1 in 600K",
+    ["Ghost Worm Fish"] = "1 in 1M",
+    ["Worm Fish"] = "1 in 3M",
+    ["Megalodon"] = "1 in 4M",
+    ["1x1x1x1 Comet Shark"] = "1 in 4M",
+    ["Bloodmoon Whale"] = "1 in 5M",
+    ["Lochness Monster"] = "1 in 3M",
+    ["Monster Shark"] = "1 in 2.5M",
+    ["Eerie Shark"] = "1 in 250K",
+    ["Great Whale"] = "1 in 900K",
+    ["Frostborn Shark"] = "1 in 500K",
+    ["Thin Armored Shark"] = "1 in 300K",
+    ["Scare"] = "1 in 3M",
+    ["Queen Crab"] = "1 in 800K",
+    ["King Crab"] = "1 in 1.2M",
+    ["Cryoshade Glider"] = "1 in 450K",
+    ["Panther Eel"] = "1 in 750K",
+    ["Giant Squid"] = "1 in 800K",
+    ["Depthseeker Ray"] = "1 in 1.2M",
+    ["Robot Kraken"] = "1 in 3.5M",
+    ["Mosasaur Shark"] = "1 in 800K",
+    ["King Jelly"] = "1 in 1.5M",
+    ["Bone Whale"] = "1 in 2M",
+    ["Elshark Gran Maja"] = "1 in 4M",
+    ["Elpirate Gran Maja"] = "1 in 4M",
+    ["ElRetro Gran Maja"] = "1 in 4M",
+    ["Ancient Whale"] = "1 in 2.75M",
+    ["Gladiator Shark"] = "1 in 1M",
+    ["Ancient Lochness Monster"] = "1 in 3M",
+    ["Talon Serpent"] = "1 in 3M",
+    ["Hacker Shark"] = "1 in 2M",
+    ["Strawberry Choc Megalodon"] = "1 in 4M",
+    ["Krampus Shark"] = "1 in 1M",
+    ["Emerald Winter Whale"] = "1 in 1.5M",
+    ["Winter Frost Shark"] = "1 in 3M",
+    ["Icebreaker Whale"] = "1 in 4M",
+    ["Cursed Kraken"] = "1 in 3M",
+    ["Pirate Megalodon"] = "1 in 4M",
+    ["Leviathan"] = "1 in 5M",
+    ["Viridis Lurker"] = "1 in 1.4M",
+    ["Ancient Magma Whale"] = "1 in 5M",
+    ["Mutant Runic Koi"] = "1 in ??",
+    ["Cosmic Mutant Shark"] = "1 in 2M",
+    ["Strawberry Orca"] = "1 in 3M",
+    ["Bonemaw Tyrant"] = "1 in 2.5M",
+    ["Sea Eater"] = "1 in 25M",
+    ["Thunderzilla"] = "1 in 30M",
 }
 
 -- // DATABASE RUBY GEMSTONE //
@@ -90,6 +177,7 @@ local FishImageURL = {
     ["Skeleton Narwhal"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Skeleton%20Narwhal.png",
     ["Thin Armored Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Thin%20Armor%20Shark.png",
     ["Thunderzilla"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Thunderzilla.png",
+    ["Strawberry Orca"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Strawberry%20Orca.png",
     ["Worm Fish"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Worm%20Fish.png",
 }
 
@@ -134,8 +222,37 @@ local function SendStatsWebhook(title, description, color, fields, imageUrl, thu
     end)
 end
 
+-- // FISH WEBHOOK SENDER //
+local function SendFishWebhook(title, description, color, fields, imageUrl, thumbUrl, mention)
+    local requestFunc = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+    if not requestFunc then return end
+    local url = (WEBHOOK_FISH ~= "") and WEBHOOK_FISH or WEBHOOK_URL
+    if url == "" then return end
+    local embed = {
+        ["title"] = title, ["description"] = description, ["color"] = color,
+        ["fields"] = fields,
+        ["footer"] = {["text"] = "BLOX Gank Webhook | " .. os.date("%X")},
+        ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
+    }
+    if imageUrl then embed["image"] = {["url"] = imageUrl} end
+    if thumbUrl then embed["thumbnail"] = {["url"] = thumbUrl} end
+    task.spawn(function()
+        pcall(function()
+            requestFunc({
+                Url = url,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({
+                    ["content"] = mention or "",
+                    ["embeds"] = {embed}
+                })
+            })
+        end)
+    end)
+end
+
 -- // WEBHOOK SENDER //
-local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl)
+local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl, mention)
     local requestFunc = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
     if not requestFunc then return end
     local embed = {
@@ -157,6 +274,7 @@ local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl
                 Body = HttpService:JSONEncode({
                     ["username"] = "BLOX Gank",
                     ["avatar_url"] = WEBHOOK_AVATAR,
+                    ["content"] = mention or "",
                     ["embeds"] = {embed}
                 })
             })
@@ -164,21 +282,20 @@ local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl
     end)
 end
 
--- // CARI PLAYER FLEKSIBEL //
-local function FindPlayer(name)
-    -- Exact match dulu
-    local p = Players:FindFirstChild(name)
-    if p then return p end
-    -- Case insensitive match
-    local lname = string.lower(name)
-    for _, player in ipairs(Players:GetPlayers()) do
-        if string.lower(player.Name) == lname then return player end
+-- // AMBIL DISCORD MENTION DARI ROBLOX USERNAME //
+local function GetMention(robloxName)
+    if not robloxName then return "" end
+    -- Cek exact match
+    local discordId = MemberList[robloxName]
+    if discordId then return "<@" .. discordId .. "> " end
+    -- Cek case insensitive
+    local lower = string.lower(robloxName)
+    for rbxName, dId in pairs(MemberList) do
+        if string.lower(rbxName) == lower then
+            return "<@" .. dId .. "> "
+        end
     end
-    -- Partial match
-    for _, player in ipairs(Players:GetPlayers()) do
-        if string.find(string.lower(player.Name), lname, 1, true) then return player end
-    end
-    return nil
+    return ""
 end
 
 -- // FIND PLAYER (toleran nama) //
@@ -207,18 +324,35 @@ end
 -- // CEK SECRET FISH + SUPPORT MUTASI //
 local function FindSecretFish(fishName)
     local lower = string.lower(fishName)
+
+    -- PASS 1: Exact match dulu (prioritas tertinggi)
     for _, baseName in ipairs(SecretFishList) do
-        if string.find(lower, string.lower(baseName), 1, true) then
-            local s = string.find(lower, string.lower(baseName), 1, true)
+        if lower == string.lower(baseName) then
+            return baseName, nil
+        end
+    end
+
+    -- PASS 2: Cari baseName yang paling panjang match (hindari "Megalodon" match "Pirate Megalodon")
+    local bestBase = nil
+    local bestLen = 0
+    local bestMutasi = nil
+    for _, baseName in ipairs(SecretFishList) do
+        local s = string.find(lower, string.lower(baseName), 1, true)
+        if s then
             local mutasi = nil
-            if s and s > 1 then
+            if s > 1 then
                 mutasi = fishName:sub(1, s - 1):match("^%s*(.-)%s*$")
                 if mutasi == "" then mutasi = nil end
             end
-            return baseName, mutasi
+            -- Pilih baseName yang paling panjang supaya "Pirate Megalodon" menang vs "Megalodon"
+            if #baseName > bestLen then
+                bestLen = #baseName
+                bestBase = baseName
+                bestMutasi = mutasi
+            end
         end
     end
-    return nil, nil
+    return bestBase, bestMutasi
 end
 
 -- // CEK RUBY GEMSTONE (harus ada mutasi "Gemstone") //
@@ -261,6 +395,20 @@ local function GetFishImageId(item)
     return nil
 end
 
+-- // CONVERT CHANCE STRING KE ANGKA //
+-- "5K" -> 5000, "1M" -> 1000000, "500" -> 500
+local function ParseChanceNumber(chanceStr)
+    if not chanceStr then return 0 end
+    local s = chanceStr:match("^%s*(.-)%s*$"):upper()
+    local num = tonumber(s:match("^([%d%.]+)"))
+    if not num then return 0 end
+    if s:find("B") then return num * 1000000000
+    elseif s:find("M") then return num * 1000000
+    elseif s:find("K") then return num * 1000
+    end
+    return num
+end
+
 -- // PARSE CHAT SERVER //
 local function ParseChat(rawMsg)
     local msg = StripTags(rawMsg)
@@ -274,10 +422,15 @@ local function ParseChat(rawMsg)
     playerName = playerName:match("%[%a+%]:%s*(.+)") or playerName
     playerName = playerName:match("^%s*(.-)%s*$") or playerName
     weight = weight:match("^%s*(.-)%s*$") or weight
+
+    -- Parse chance: "with a 1 in 5K chance"
+    local chanceStr = rawMsg:match("with a 1 in%s+([%d%.%a]+)%s+chance")
+    local chanceNum = ParseChanceNumber(chanceStr)
+
     fishFull = fishFull:match("^(.-)%s+with a 1 in") or fishFull
     fishFull = fishFull:match("^(.-)%s*[!%.]?$") or fishFull
     fishFull = fishFull:match("^%s*(.-)%s*$") or fishFull
-    return { player = playerName, fish = fishFull, weight = weight }
+    return { player = playerName, fish = fishFull, weight = weight, chance = chanceStr or "N/A", chanceNum = chanceNum }
 end
 
 -- // PROSES PESAN CHAT SERVER //
@@ -304,12 +457,12 @@ local function CheckAndSend(rawMsg)
     local legendaryBase = FindLegendaryCrystal(data.fish)
     if legendaryBase then
         local imageUrl = FishImageURL[legendaryBase] or (FishImageCache[legendaryBase] and (PROXY .. "/asset/" .. FishImageCache[legendaryBase])) or nil
-        SendWebhook("💎 CRYSTALIZED LEGENDARY!", nil, 3407871, {
+        SendFishWebhook("💎 CRYSTALIZED LEGENDARY!", nil, 3407871, {
             {["name"] = "Pemain",   ["value"] = "**" .. data.player .. "**",  ["inline"] = true},
             {["name"] = "Ikan",     ["value"] = "**" .. data.fish .. "**",    ["inline"] = true},
             {["name"] = "Mutasi",   ["value"] = "✨ Crystalized",             ["inline"] = true},
             {["name"] = "Berat",    ["value"] = data.weight,                  ["inline"] = true},
-        }, imageUrl, avatarUrl)
+        }, imageUrl, avatarUrl, GetMention(data.player))
         return
     end
 
@@ -317,11 +470,11 @@ local function CheckAndSend(rawMsg)
     local rubyBase = FindRuby(data.fish)
     if rubyBase then
         local imageUrl = FishImageURL[rubyBase] or (FishImageCache[rubyBase] and (PROXY .. "/asset/" .. FishImageCache[rubyBase])) or nil
-        SendWebhook("💎 RUBY GEMSTONE!", nil, 16753920, {
+        SendFishWebhook("💎 RUBY GEMSTONE!", nil, 16753920, {
             {["name"] = "Pemain", ["value"] = "**" .. data.player .. "**", ["inline"] = true},
             {["name"] = "Item",   ["value"] = "**" .. data.fish .. "**",   ["inline"] = true},
             {["name"] = "Berat",  ["value"] = data.weight,                 ["inline"] = true},
-        }, imageUrl, avatarUrl)
+        }, imageUrl, avatarUrl, GetMention(data.player))
         return
     end
 
@@ -347,18 +500,29 @@ local function CheckAndSend(rawMsg)
         PlayerStats[uid].secretList[baseName] = existing + 1
     end
 
+    -- Ambil chance dari database resmi
+    local chanceInfo = FishChanceData[baseName] or "Unknown"
+
+    -- Pisah nama ikan dan mutasi jadi 2 field supaya tidak melebar
+    local ikanField = "**" .. data.fish .. "**"
+    local mutasiField = mutasi and ("*" .. mutasi .. "*") or "-"
+
     if isForgotten then
-        SendWebhook("🌟 FORGOTTEN TIER DETECTED!", nil, 16777215, {
-            {["name"] = "Pemain", ["value"] = "**" .. data.player .. "**", ["inline"] = true},
-            {["name"] = "Ikan",   ["value"] = fishLabel,                   ["inline"] = true},
-            {["name"] = "Berat",  ["value"] = data.weight,                 ["inline"] = true},
-        }, imageUrl, avatarUrl)
+        SendFishWebhook("🌟 FORGOTTEN TIER DETECTED!", nil, 16777215, {
+            {["name"] = "Pemain",  ["value"] = "**" .. data.player .. "**", ["inline"] = true},
+            {["name"] = "Ikan",    ["value"] = ikanField,                   ["inline"] = true},
+            {["name"] = "Mutasi",  ["value"] = mutasiField,                 ["inline"] = true},
+            {["name"] = "Berat",   ["value"] = data.weight,                 ["inline"] = true},
+            {["name"] = "Chance",  ["value"] = "🎲 " .. chanceInfo,         ["inline"] = true},
+        }, imageUrl, avatarUrl, GetMention(data.player))
     else
-        SendWebhook("🚨 SECRET FISH DETECTED!", nil, 1752220, {
-            {["name"] = "Pemain", ["value"] = "**" .. data.player .. "**", ["inline"] = true},
-            {["name"] = "Ikan",   ["value"] = fishLabel,                   ["inline"] = true},
-            {["name"] = "Berat",  ["value"] = data.weight,                 ["inline"] = true},
-        }, imageUrl, avatarUrl)
+        SendFishWebhook("🚨 SECRET FISH DETECTED!", nil, 1752220, {
+            {["name"] = "Pemain",  ["value"] = "**" .. data.player .. "**", ["inline"] = true},
+            {["name"] = "Ikan",    ["value"] = ikanField,                   ["inline"] = true},
+            {["name"] = "Mutasi",  ["value"] = mutasiField,                 ["inline"] = true},
+            {["name"] = "Berat",   ["value"] = data.weight,                 ["inline"] = true},
+            {["name"] = "Chance",  ["value"] = "🎲 " .. chanceInfo,         ["inline"] = true},
+        }, imageUrl, avatarUrl, GetMention(data.player))
     end
 end
 
@@ -480,7 +644,7 @@ local function StartMonitoring()
             SendWebhook("✅ PLAYER JOINED SERVER", nil, 65280, {
                 {["name"] = "Username", ["value"] = "**" .. player.Name .. "**",              ["inline"] = true},
                 {["name"] = "Total",    ["value"] = "👥 " .. tostring(#Players:GetPlayers()), ["inline"] = true}
-            }, nil, avatarUrl)
+            }, nil, avatarUrl, GetMention(player.Name))
         end)
         WatchForFish(player)
     end)
@@ -524,7 +688,7 @@ local function StartMonitoring()
         SendWebhook("👋 PLAYER LEFT SERVER", nil, 16729344, {
             {["name"] = "Username", ["value"] = "**" .. pName .. "**",   ["inline"] = true},
             {["name"] = "Total",    ["value"] = "👥 " .. tostring(totalNow), ["inline"] = true}
-        }, nil, avatarUrl)
+        }, nil, avatarUrl, GetMention(pName))
 
         -- Kirim stats langsung di task.spawn terpisah
         task.spawn(function()
@@ -563,7 +727,7 @@ local function CreateUI()
     -- Main Frame
     local frame = Instance.new("Frame")
     frame.Name = "Main"
-    frame.Size = UDim2.new(0, 300, 0, 180)
+    frame.Size = UDim2.new(0, 300, 0, 320)
     frame.Position = UDim2.new(0.5, -150, 0.5, -90)
     frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     frame.BorderSizePixel = 0
@@ -626,7 +790,7 @@ local function CreateUI()
 
     -- Minimize logic
     local isMinimized = false
-    local fullSize = UDim2.new(0, 300, 0, 180)
+    local fullSize = UDim2.new(0, 300, 0, 320)
     local miniSize = UDim2.new(0, 300, 0, 36)
 
     minBtn.MouseButton1Click:Connect(function()
@@ -691,7 +855,7 @@ local function CreateUI()
     -- Status dot + label
     local statusDot = Instance.new("Frame")
     statusDot.Size = UDim2.new(0, 8, 0, 8)
-    statusDot.Position = UDim2.new(0, 16, 0, 54)
+    statusDot.Position = UDim2.new(0, 16, 0, 46)
     statusDot.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
     statusDot.BorderSizePixel = 0
     statusDot.Parent = frame
@@ -700,7 +864,7 @@ local function CreateUI()
     local statusLabel = Instance.new("TextLabel")
     statusLabel.Text = "Tidak Aktif"
     statusLabel.Size = UDim2.new(1, -40, 0, 20)
-    statusLabel.Position = UDim2.new(0, 30, 0, 46)
+    statusLabel.Position = UDim2.new(0, 30, 0, 38)
     statusLabel.BackgroundTransparency = 1
     statusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
     statusLabel.Font = Enum.Font.Gotham
@@ -708,33 +872,60 @@ local function CreateUI()
     statusLabel.TextXAlignment = Enum.TextXAlignment.Left
     statusLabel.Parent = frame
 
-    -- Webhook input
-    local inputBox = Instance.new("TextBox")
-    inputBox.PlaceholderText = "Paste Discord Webhook URL..."
-    inputBox.Size = UDim2.new(1, -24, 0, 34)
-    inputBox.Position = UDim2.new(0, 12, 0, 74)
-    inputBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    inputBox.TextColor3 = Color3.fromRGB(220, 220, 220)
-    inputBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-    inputBox.Font = Enum.Font.Gotham
-    inputBox.TextSize = 10
-    inputBox.ClearTextOnFocus = false
-    inputBox.BorderSizePixel = 0
-    inputBox.Text = ""
-    inputBox.TextXAlignment = Enum.TextXAlignment.Left
-    inputBox.ClipsDescendants = true
-    inputBox.Parent = frame
-    local inputCorner = Instance.new("UICorner", inputBox)
-    inputCorner.CornerRadius = UDim.new(0, 6)
-    local inputPad = Instance.new("UIPadding", inputBox)
-    inputPad.PaddingLeft = UDim.new(0, 8)
-    inputPad.PaddingRight = UDim.new(0, 8)
+    local function makeInput(placeholder, yPos)
+        local box = Instance.new("TextBox")
+        box.PlaceholderText = placeholder
+        box.Size = UDim2.new(1, -24, 0, 30)
+        box.Position = UDim2.new(0, 12, 0, yPos)
+        box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        box.TextColor3 = Color3.fromRGB(220, 220, 220)
+        box.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+        box.Font = Enum.Font.Gotham
+        box.TextSize = 10
+        box.ClearTextOnFocus = false
+        box.BorderSizePixel = 0
+        box.Text = ""
+        box.TextXAlignment = Enum.TextXAlignment.Left
+        box.ClipsDescendants = true
+        box.Parent = frame
+        Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
+        local pad = Instance.new("UIPadding", box)
+        pad.PaddingLeft = UDim.new(0, 8)
+        pad.PaddingRight = UDim.new(0, 8)
+        return box
+    end
+
+    local function makeLabel(text, yPos)
+        local lbl = Instance.new("TextLabel")
+        lbl.Text = text
+        lbl.Size = UDim2.new(1, -24, 0, 14)
+        lbl.Position = UDim2.new(0, 12, 0, yPos)
+        lbl.BackgroundTransparency = 1
+        lbl.TextColor3 = Color3.fromRGB(130, 130, 130)
+        lbl.Font = Enum.Font.Gotham
+        lbl.TextSize = 10
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent = frame
+        return lbl
+    end
+
+    makeLabel("👋 Webhook Join / Leave", 58)
+    local inputJoin = makeInput("Paste webhook join/leave...", 72)
+
+    makeLabel("🚨 Webhook Secret Fish", 110)
+    local inputFish = makeInput("Paste webhook secret fish...", 124)
+
+    makeLabel("📊 Webhook Stats", 162)
+    local inputStats = makeInput("Paste webhook stats...", 176)
+
+    makeLabel("🔔 Discord Role ID (opsional)", 214)
+    local inputRole = makeInput("Masukkan Role ID...", 228)
 
     -- Start button
     local startBtn = Instance.new("TextButton")
     startBtn.Text = "START MONITORING"
     startBtn.Size = UDim2.new(1, -24, 0, 34)
-    startBtn.Position = UDim2.new(0, 12, 0, 118)
+    startBtn.Position = UDim2.new(0, 12, 0, 266)
     startBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
     startBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     startBtn.Font = Enum.Font.GothamBold
@@ -753,9 +944,13 @@ local function CreateUI()
     startBtn.MouseButton1Click:Connect(function()
         if SCRIPT_ACTIVE then return end
 
-        local webhookText = inputBox.Text
-        if not webhookText:find("discord.com/api/webhooks") then
-            startBtn.Text = "❌ WEBHOOK INVALID!"
+        local joinText = inputJoin.Text
+        local fishText = inputFish.Text
+        local statsText = inputStats.Text
+
+        -- Minimal webhook join harus diisi
+        if not joinText:find("discord.com/api/webhooks") then
+            startBtn.Text = "❌ WEBHOOK JOIN INVALID!"
             startBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
             task.wait(2)
             startBtn.Text = "START MONITORING"
@@ -763,7 +958,11 @@ local function CreateUI()
             return
         end
 
-        WEBHOOK_URL = webhookText
+        WEBHOOK_URL = joinText
+        if fishText:find("discord.com/api/webhooks") then WEBHOOK_FISH = fishText end
+        if statsText:find("discord.com/api/webhooks") then WEBHOOK_STATS = statsText end
+        local roleText = inputRole.Text:match("^%s*(.-)%s*$")
+        if roleText ~= "" then DISCORD_ROLE_ID = roleText end
         SCRIPT_ACTIVE = true
 
         -- Update UI
@@ -772,7 +971,10 @@ local function CreateUI()
         statusLabel.TextColor3 = Color3.fromRGB(0, 220, 100)
         startBtn.Text = "✅ MONITORING AKTIF"
         startBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-        inputBox.TextEditable = false
+        inputJoin.TextEditable = false
+        inputFish.TextEditable = false
+        inputStats.TextEditable = false
+        inputRole.TextEditable = false
 
         StartMonitoring()
     end)
