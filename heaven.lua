@@ -10,8 +10,8 @@ local TweenService = game:GetService("TweenService")
 
 -- // CONFIGURATION //
 local WEBHOOK_URL = ""
-local WEBHOOK_STATS = "https://discord.com/api/webhooks/1488003996026273893/4v2Z-a838D17SL7qn03o8s2PKX3oN2quVIui1g4GmYjrIkgnONbtQUlOGqxkLQLD5eIm"
-local WEBHOOK_FISH = "https://discord.com/api/webhooks/1488485636024307784/s0tXIAmlnx2OosodZm6FiC3Ny9YT4PzcIDFqUeHXymdVvcKOyuIRVxLPcxE7lsK1IZgb" -- khusus secret fish
+local WEBHOOK_STATS = ""
+local WEBHOOK_FISH = "" -- khusus secret fish
 local DISCORD_ROLE_ID = "" -- role ID untuk di-tag
 local WEBHOOK_AVATAR = "" -- isi dengan URL gambar PNG kamu
 local PROXY = "https://square-haze-a007.remediashop.workers.dev"
@@ -195,6 +195,9 @@ local LeaveTimers = {}
 local PlayerStats = {}
 -- key = playerName (lowercase), value = userId
 local PlayerNameToId = {}
+
+-- // CACHE DISCORD MENTION (username/displayname -> discordId) //
+local MentionCache = {}
 
 -- // STATS WEBHOOK SENDER //
 local function SendStatsWebhook(title, description, color, fields, imageUrl, thumbUrl)
@@ -623,6 +626,14 @@ local function StartMonitoring()
         PlayerStats[p.UserId] = { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil, name = p.Name }
         PlayerNameToId[string.lower(p.Name)] = p.UserId
         PlayerNameToId[string.lower(p.DisplayName)] = p.UserId
+        -- Build mention cache untuk username dan displayname
+        for rbxName, dId in pairs(MemberList) do
+            if string.lower(rbxName) == string.lower(p.Name) or
+               string.lower(rbxName) == string.lower(p.DisplayName) then
+                MentionCache[string.lower(p.Name)] = dId
+                MentionCache[string.lower(p.DisplayName)] = dId
+            end
+        end
     end
     Players.PlayerAdded:Connect(function(player)
         if not SCRIPT_ACTIVE then return end
@@ -636,6 +647,14 @@ local function StartMonitoring()
         PlayerStats[player.UserId] = { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil, name = player.Name }
         PlayerNameToId[string.lower(player.Name)] = player.UserId
         PlayerNameToId[string.lower(player.DisplayName)] = player.UserId
+        -- Build mention cache
+        for rbxName, dId in pairs(MemberList) do
+            if string.lower(rbxName) == string.lower(player.Name) or
+               string.lower(rbxName) == string.lower(player.DisplayName) then
+                MentionCache[string.lower(player.Name)] = dId
+                MentionCache[string.lower(player.DisplayName)] = dId
+            end
+        end
 
         task.spawn(function()
             task.wait(1)
