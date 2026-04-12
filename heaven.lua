@@ -12,7 +12,7 @@ local TweenService = game:GetService("TweenService")
 local WEBHOOK_URL = ""
 local WEBHOOK_STATS = "https://discord.com/api/webhooks/1488003996026273893/4v2Z-a838D17SL7qn03o8s2PKX3oN2quVIui1g4GmYjrIkgnONbtQUlOGqxkLQLD5eIm"
 local WEBHOOK_FISH = "https://discord.com/api/webhooks/1488485636024307784/s0tXIAmlnx2OosodZm6FiC3Ny9YT4PzcIDFqUeHXymdVvcKOyuIRVxLPcxE7lsK1IZgb" -- khusus secret fish
-local DISCORD_ROLE_ID = "" -- role ID untuk di-tag
+local DISCORD_ROLE_ID = "1489557585764810802" -- role ID untuk di-tag
 local WEBHOOK_AVATAR = "" -- isi dengan URL gambar PNG kamu
 local PROXY = "https://square-haze-a007.remediashop.workers.dev"
 local SCRIPT_ACTIVE = false
@@ -65,7 +65,7 @@ local SecretFishList = {
 
 -- // DATABASE FORGOTTEN TIER //
 local ForgottenList = {
-    "Sea Eater", "Thunderzilla", "iridesca",
+    "Sea Eater", "Thunderzilla", "Iridesca",
 }
 
 
@@ -125,7 +125,13 @@ local FishChanceData = {
     ["Bonemaw Tyrant"] = "1 in 2.5M",
     ["Sea Eater"] = "1 in 25M",
     ["Thunderzilla"] = "1 in 30M",
-    ["Iridesca"] = "1 in 25M",
+    ["Iridesca"] = "1 in 25m",
+    ["Eggy Enchant Stone"] = "1 in 100k",
+}
+
+-- // DATABASE MYTHIC TIER //
+local MythicList = {
+    "Eggy Enchant Stone"
 }
 
 -- // DATABASE RUBY GEMSTONE //
@@ -179,6 +185,7 @@ local FishImageURL = {
     ["Thin Armored Shark"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Thin%20Armor%20Shark.png",
     ["Thunderzilla"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Thunderzilla.png",
     ["Strawberry Orca"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Strawberry%20Orca.png",
+    ["Eggy Enchant Stone"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Eggy%20Enchant%20Stone.png",
     ["Worm Fish"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Worm%20Fish.png",
     ["Iridesca"] = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Iridesca.png",
 }
@@ -233,9 +240,15 @@ local function SendFishWebhook(title, description, color, fields, imageUrl, thum
     if not requestFunc then return end
     local url = (WEBHOOK_FISH ~= "") and WEBHOOK_FISH or WEBHOOK_URL
     if url == "" then return end
+    -- Tambah mention sebagai field kalau ada
+    local finalFields = {}
+    for _, f in ipairs(fields) do table.insert(finalFields, f) end
+    if mention and mention ~= "" then
+        table.insert(finalFields, {["name"] = "📣 Mention", ["value"] = mention:match("^%s*(.-)%s*$"), ["inline"] = true})
+    end
     local embed = {
         ["title"] = title, ["description"] = description, ["color"] = color,
-        ["fields"] = fields,
+        ["fields"] = finalFields,
         ["footer"] = {["text"] = "BLOX Gank Webhook | " .. os.date("%X")},
         ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
     }
@@ -247,10 +260,7 @@ local function SendFishWebhook(title, description, color, fields, imageUrl, thum
                 Url = url,
                 Method = "POST",
                 Headers = {["Content-Type"] = "application/json"},
-                Body = HttpService:JSONEncode({
-                    ["content"] = mention or "",
-                    ["embeds"] = {embed}
-                })
+                Body = HttpService:JSONEncode({["embeds"] = {embed}})
             })
         end)
     end)
@@ -260,11 +270,17 @@ end
 local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl, mention)
     local requestFunc = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
     if not requestFunc then return end
+    -- Tambah mention sebagai field kalau ada
+    local finalFields = {}
+    for _, f in ipairs(fields) do table.insert(finalFields, f) end
+    if mention and mention ~= "" then
+        table.insert(finalFields, {["name"] = "📣 Mention", ["value"] = mention:match("^%s*(.-)%s*$"), ["inline"] = true})
+    end
     local embed = {
         ["title"] = title,
         ["description"] = description,
         ["color"] = color,
-        ["fields"] = fields,
+        ["fields"] = finalFields,
         ["footer"] = {["text"] = "BLOX Gank Webhook | " .. os.date("%X")},
         ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
     }
@@ -279,7 +295,6 @@ local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl
                 Body = HttpService:JSONEncode({
                     ["username"] = "BLOX Gank",
                     ["avatar_url"] = WEBHOOK_AVATAR,
-                    ["content"] = mention or "",
                     ["embeds"] = {embed}
                 })
             })
@@ -358,6 +373,17 @@ local function FindSecretFish(fishName)
         end
     end
     return bestBase, bestMutasi
+end
+
+-- // CEK MYTHIC TIER //
+local function FindMythic(fishName)
+    local lower = string.lower(fishName)
+    for _, name in ipairs(MythicList) do
+        if string.find(lower, string.lower(name), 1, true) then
+            return name
+        end
+    end
+    return nil
 end
 
 -- // CEK RUBY GEMSTONE (harus ada mutasi "Gemstone") //
@@ -467,6 +493,18 @@ local function CheckAndSend(rawMsg)
             {["name"] = "Ikan",     ["value"] = "**" .. data.fish .. "**",    ["inline"] = true},
             {["name"] = "Mutasi",   ["value"] = "✨ Crystalized",             ["inline"] = true},
             {["name"] = "Berat",    ["value"] = data.weight,                  ["inline"] = true},
+        }, imageUrl, avatarUrl, GetMention(data.player))
+        return
+    end
+
+    -- // CEK MYTHIC TIER //
+    local mythicBase = FindMythic(data.fish)
+    if mythicBase then
+        local imageUrl = FishImageURL[mythicBase] or nil
+        SendFishWebhook("🔥 MYTHIC TIER DETECTED!", nil, 16711935, {
+            {["name"] = "Pemain", ["value"] = "**" .. data.player .. "**", ["inline"] = true},
+            {["name"] = "Item",   ["value"] = "**" .. data.fish .. "**",   ["inline"] = true},
+            {["name"] = "Berat",  ["value"] = data.weight,                 ["inline"] = true},
         }, imageUrl, avatarUrl, GetMention(data.player))
         return
     end
