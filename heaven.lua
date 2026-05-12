@@ -30,26 +30,7 @@ local LEADERBOARD_INTERVAL = 1800  -- 30 menit (detik)
 -- ============================================================
 
 local MemberList = {
-    { username = "Allethetwin", display = "allethetwin", id = "870201488218157107" },
-    { username = "Minyaktalon9990", display = "Revv2", id = "870201488218157107" },
-    { username = "cjmin131", display = "Karaadino", id = "1406639996127154246" },
-    { username = "cigswet", display = "juan", id = "1247182274139652206" },
-    { username = "choalyn_2", display = "Alyn_ikaa", id = "1467390946357416060" },
-    { username = "klerra_Asu", display = "Nightmare_scare", id = "1467390946357416060" },
-    { username = "rexlepwz", display = "reeamore", id = "1205780304753725492" },
-    { username = "nax44q", display = "NAXAmauFORGOTTEN", id = "853608502056189982" },
-    { username = "1nhanss", display = "han", id = "1438046472179548190" },
-    { username = "pyciieegirls", display = "Pyciiiii", id = "1182254978904109138" },
-    { username = "cecillionz1", display = "ceceyy", id = "1404117087303110877" },
-    { username = "AliPinkArab24", display = "WinterK2P", id = "821690180984373298" },
-    { username = "trianayaa23", display = "Tiarkive", id = "821690180984373298" },
-    { username = "nuserrxyz2", display = "alaydf", id = "821690180984373298" },
-    { username = "tobiooo44", display = "Tobiooo", id = "821690180984373298" },
-    { username = "venusaaaaaaaaaaaa", display = "snowieK2p", id = "821690180984373298" },
-    { username = "NexusJaydenUmber2008", display = "TokeSawitxjo", id = "1425840818849054760" },
-    { username = "callaavy", display = "calla", id = "1478607686345035880" },
-    { username = "mnikndy", display = "prettyv", id = "1478607686345035880" },
-    { username = "akuganteng66612", display = "gantengg", id = "1398328850793889872" },
+
 }
 -- ============================================================
 --  DATABASE
