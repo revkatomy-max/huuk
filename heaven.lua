@@ -334,8 +334,8 @@ local AvatarCache    = {}
 local LeaveTimers    = {}
 local PlayerStats    = {}
 local PlayerNameToId = {}
-local GalatamaStats  = {}   -- [uid] = { name, totalWeight, catches }
-local NameStats      = {}   -- [lname] = { name, secretList, totalWeight, catches }
+local GalatamaStats  = {}
+local NameStats      = {}   -- key = resolved alias (lname)
 
 local ServerStats = {
     totalSecret    = 0,
@@ -459,6 +459,23 @@ local function FindGalatamaFish(baseName)
         if lower == name:lower() then return name end
     end
     return nil
+end
+
+-- ============================================================
+--  DISPLAY NAME RESOLVER
+-- ============================================================
+
+local function ResolveDisplayName(name)
+    -- cek exact username dulu
+    local p = Players:FindFirstChild(name)
+    if p then return p.Name end
+    -- cek via cache displayname/username → uid → username
+    local uid = PlayerNameToId[string.lower(name)]
+    if uid then
+        local p2 = Players:GetPlayerByUserId(uid)
+        if p2 then return p2.Name end
+    end
+    return name  -- fallback
 end
 
 -- ============================================================
@@ -627,7 +644,7 @@ local function SendGalatamaLeaderboard(isFinal)
     local merged = {}
     for _, gs in pairs(GalatamaStats) do
         if gs.totalWeight > 0 then
-            local key = gs.name:lower()
+            local key = string.lower(gs.name)
             if not merged[key] or gs.totalWeight > merged[key].totalWeight then
                 merged[key] = { name = gs.name, totalWeight = gs.totalWeight, catches = gs.catches }
             end
@@ -804,11 +821,15 @@ local function CheckAndSend(rawMsg)
     local data = ParseChat(rawMsg)
     if not data then return end
 
+    -- Normalize DisplayName → Username
+    data.player = ResolveDisplayName(data.player)
+
     local targetPlayer = FindPlayer(data.player)
     local uid = (targetPlayer and targetPlayer.UserId)
              or PlayerNameToId[string.lower(data.player)]
     local avatarUrl = GetAvatarUrlById(uid)
-    local lname     = string.lower(data.player)
+
+    local lname = string.lower(data.player)
 
     if uid then
         if not PlayerStats[uid] then
@@ -820,6 +841,8 @@ local function CheckAndSend(rawMsg)
             GalatamaStats[uid] = { name = data.player, totalWeight = 0, catches = {} }
         end
     end
+
+    -- NameStats pakai lname (resolved alias), nama update ke yang catch terakhir
     if not NameStats[lname] then
         NameStats[lname] = { name = data.player, secretList = {}, totalWeight = 0, catches = {} }
     end
@@ -1016,7 +1039,6 @@ local function StartMonitoring()
     HookChat()
     StartEventMonitor()
 
-    -- Server stats tiap 20 menit
     task.spawn(function()
         while SCRIPT_ACTIVE do
             task.wait(1200)
@@ -1041,7 +1063,6 @@ local function StartMonitoring()
         end
     end)
 
-    -- Galatama leaderboard tiap 30 menit
     task.spawn(function()
         while SCRIPT_ACTIVE do
             task.wait(1800)
@@ -1051,20 +1072,22 @@ local function StartMonitoring()
 
     for _, p in ipairs(allPlayers) do
         WatchForFish(p)
+        local lname = string.lower(p.Name)
         AvatarCache[p.UserId]                       = GetAvatarUrlById(p.UserId)
         PlayerStats[p.UserId]                       = { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil, name = p.Name }
         GalatamaStats[p.UserId]                     = { name = p.Name, totalWeight = 0, catches = {} }
-        NameStats[string.lower(p.Name)]             = { name = p.Name, secretList = {}, totalWeight = 0, catches = {} }
+        NameStats[lname]                            = NameStats[lname] or { name = p.Name, secretList = {}, totalWeight = 0, catches = {} }
         PlayerNameToId[string.lower(p.Name)]        = p.UserId
         PlayerNameToId[string.lower(p.DisplayName)] = p.UserId
     end
 
     Players.PlayerAdded:Connect(function(player)
         if not SCRIPT_ACTIVE then return end
+        local lname = string.lower(player.Name)
         LeaveTimers[player.UserId]                          = nil
         PlayerStats[player.UserId]                          = { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil, name = player.Name }
         GalatamaStats[player.UserId]                        = { name = player.Name, totalWeight = 0, catches = {} }
-        NameStats[string.lower(player.Name)]                = NameStats[string.lower(player.Name)] or { name = player.Name, secretList = {}, totalWeight = 0, catches = {} }
+        NameStats[lname]                                    = NameStats[lname] or { name = player.Name, secretList = {}, totalWeight = 0, catches = {} }
         PlayerNameToId[string.lower(player.Name)]           = player.UserId
         PlayerNameToId[string.lower(player.DisplayName)]    = player.UserId
         task.spawn(function()
@@ -1113,7 +1136,6 @@ local function StartMonitoring()
         end)
     end)
 
-    -- Final leaderboard saat disconnect
     local finalSent = false
     local function TrySendFinal()
         if finalSent or not SCRIPT_ACTIVE then return end
