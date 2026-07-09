@@ -96,14 +96,31 @@ local LegendaryCrystalList = {
 --  GALATAMA EVENT — WEIGHT BASED
 -- ============================================================
 
-local GalatamaFishList = {
-    "Crystal Goliath",
-    "Crystalline Behemoth",
-    "Frostborn Shark",
+local GalatamaFishPoints = {
+    ["Sea Eater"]                = 25000,
+    ["Fluorivane"]               = 15000,
+    ["Deepsea Monster Axolotl"]  = 2000,
+    ["Runic Enchant Stone"]      = 1200,
+    ["Mutant Runic Koi"]         = 3000,
 }
 
-local MutasiNoBonus             = { "big", "shiny" }
-local GALATAMA_MUTASI_BONUS_KG  = 1000
+-- Bonus poin mutasi (2 tier). Mutasi di luar list ini (termasuk Big & Shiny) = tidak dihitung.
+local GalatamaMutasiPoints = {
+    ["sandy"]       = 1000,
+    ["ghost"]       = 1000,
+    ["stone"]       = 1000,
+    ["corrupt"]     = 1000,
+    ["gold"]        = 1000,
+    ["frozen"]      = 1000,
+    ["midnight"]    = 1000,
+    ["fairy dust"]  = 10000,
+    ["gemstone"]    = 10000,
+    ["lightning"]   = 10000,
+    ["radioactive"] = 1000,
+    ["fire"]        = 10000,
+    ["aurora"]      = 10000,
+    ["galaxsy"]      = 1000,
+}
 
 -- ============================================================
 --  FISH CHANCE & IMAGE
@@ -443,19 +460,30 @@ local function FormatWeight(kg)
     end
 end
 
-local function CheckGalatamaMutasiBonus(mutasi)
-    if not mutasi or mutasi == "" then return false, nil end
+-- Format angka poin dengan pemisah ribuan, contoh: 25000 -> "25,000 pts"
+local function FormatPoints(n)
+    n = math.floor(n or 0)
+    local sign = ""
+    if n < 0 then sign = "-"; n = -n end
+    local s = tostring(n)
+    local formatted = s:reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+    return sign .. formatted .. " pts"
+end
+
+-- Cari poin bonus mutasi. Return 0 kalau mutasi kosong, Big/Shiny, atau tidak dikenal.
+local function GetGalatamaMutasiPoints(mutasi)
+    if not mutasi or mutasi == "" then return 0, nil end
     local ml = mutasi:lower()
-    for _, excluded in ipairs(MutasiNoBonus) do
-        if ml == excluded:lower() then return false, mutasi end
+    for name, pts in pairs(GalatamaMutasiPoints) do
+        if ml == name then return pts, mutasi end
     end
-    return true, mutasi
+    return 0, nil
 end
 
 local function FindGalatamaFish(baseName)
     if not baseName then return nil end
     local lower = baseName:lower()
-    for _, name in ipairs(GalatamaFishList) do
+    for name, _ in pairs(GalatamaFishPoints) do
         if lower == name:lower() then return name end
     end
     return nil
@@ -643,19 +671,19 @@ end
 local function SendGalatamaLeaderboard(isFinal)
     local merged = {}
     for _, gs in pairs(GalatamaStats) do
-        if gs.totalWeight > 0 then
+        if gs.totalPoints > 0 then
             local key = string.lower(gs.name)
-            if not merged[key] or gs.totalWeight > merged[key].totalWeight then
-                merged[key] = { name = gs.name, totalWeight = gs.totalWeight, catches = gs.catches }
+            if not merged[key] or gs.totalPoints > merged[key].totalPoints then
+                merged[key] = { name = gs.name, totalPoints = gs.totalPoints, catches = gs.catches }
             end
         end
     end
     for lname, ns in pairs(NameStats) do
-        if (ns.totalWeight or 0) > 0 then
+        if (ns.totalPoints or 0) > 0 then
             if not merged[lname] then
-                merged[lname] = { name = ns.name, totalWeight = ns.totalWeight or 0, catches = ns.catches }
-            elseif (ns.totalWeight or 0) > merged[lname].totalWeight then
-                merged[lname] = { name = ns.name, totalWeight = ns.totalWeight or 0, catches = ns.catches }
+                merged[lname] = { name = ns.name, totalPoints = ns.totalPoints or 0, catches = ns.catches }
+            elseif (ns.totalPoints or 0) > merged[lname].totalPoints then
+                merged[lname] = { name = ns.name, totalPoints = ns.totalPoints or 0, catches = ns.catches }
             end
         end
     end
@@ -665,17 +693,17 @@ local function SendGalatamaLeaderboard(isFinal)
         local catchLines = {}
         for fishName, catchData in pairs(gs.catches) do
             local count = catchData.count or 0
-            local w     = catchData.totalWeight or 0
-            table.insert(catchLines, fishName .. " x" .. count .. " (" .. FormatWeight(w) .. ")")
+            local p     = catchData.totalPoints or 0
+            table.insert(catchLines, fishName .. " x" .. count .. " (" .. FormatPoints(p) .. ")")
         end
         table.insert(leaderData, {
             name        = gs.name,
-            totalWeight = gs.totalWeight,
+            totalPoints = gs.totalPoints,
             catchStr    = #catchLines > 0 and table.concat(catchLines, "\n") or "-",
         })
     end
     if #leaderData == 0 then return end
-    table.sort(leaderData, function(a, b) return a.totalWeight > b.totalWeight end)
+    table.sort(leaderData, function(a, b) return a.totalPoints > b.totalPoints end)
 
     local medals     = { "🥇", "🥈", "🥉" }
     local uptime     = os.time() - ServerStats.startTime
@@ -686,7 +714,7 @@ local function SendGalatamaLeaderboard(isFinal)
         if i > 10 then break end
         local medal = medals[i] or ("#" .. i)
         table.insert(fields, {
-            name   = medal .. " " .. entry.name .. " — ⚖️ " .. FormatWeight(entry.totalWeight),
+            name   = medal .. " " .. entry.name .. " — ⚖️ " .. FormatPoints(entry.totalPoints),
             value  = entry.catchStr,
             inline = false,
         })
@@ -699,7 +727,7 @@ local function SendGalatamaLeaderboard(isFinal)
     PostWebhook(eventUrl, {
         embeds = { BuildEmbed(
             title,
-            "```\nIkan: Crystal Goliath | Crystalline Behemoth | Frostborn Shark\nScoring: Total Weight (kg) — Bonus Mutasi (kecuali Big & Shiny): +1,000 kg\n```",
+            "```\nIkan: Sea Eater (25,000) | Fluorivane (15,000) | Deepsea Monster Axolotl (2,000) | Runic Enchant Stone (1,200)\nBonus Mutasi: Sandy/Ghost/Stone/Corrupt/Gold/Frozen/Midnight +1,000 | Fairy Dust/Gemstone/Lightning/Radioactive/Fire/Aurora +10,000\nBig & Shiny: tidak dihitung\n```",
             16766720, fields, nil, nil, "BLOX Gank Galatama"
         )},
     })
@@ -838,13 +866,13 @@ local function CheckAndSend(rawMsg)
         PlayerStats[uid].catchCount   = PlayerStats[uid].catchCount + 1
         PlayerStats[uid].lastFishTime = os.time()
         if not GalatamaStats[uid] then
-            GalatamaStats[uid] = { name = data.player, totalWeight = 0, catches = {} }
+            GalatamaStats[uid] = { name = data.player, totalPoints = 0, catches = {} }
         end
     end
 
     -- NameStats pakai lname (resolved alias), nama update ke yang catch terakhir
     if not NameStats[lname] then
-        NameStats[lname] = { name = data.player, secretList = {}, totalWeight = 0, catches = {} }
+        NameStats[lname] = { name = data.player, secretList = {}, totalPoints = 0, catches = {} }
     end
 
     -- 1. Crystalized Legendary
@@ -895,47 +923,40 @@ local function CheckAndSend(rawMsg)
             { name = SEP .. " Chance", value = chanceInfo,                   inline = true },
         }
 
-        -- Galatama weight scoring
+        -- Galatama point scoring
         local galBase = FindGalatamaFish(baseName)
         if galBase then
-            local rawWeight   = ParseWeight(data.weight)
-            local mutasiBonus = 0
-            local bonusLabel  = nil
+            local basePoints = GalatamaFishPoints[galBase]
+            local mutasiBonus, bonusLabel = GetGalatamaMutasiPoints(mutasi)
 
-            local eligible, label = CheckGalatamaMutasiBonus(mutasi)
-            if eligible then
-                mutasiBonus = GALATAMA_MUTASI_BONUS_KG
-                bonusLabel  = label
-            end
-
-            local totalAdded = rawWeight + mutasiBonus
+            local totalAdded = basePoints + mutasiBonus
 
             if uid and GalatamaStats[uid] then
-                GalatamaStats[uid].totalWeight = GalatamaStats[uid].totalWeight + totalAdded
+                GalatamaStats[uid].totalPoints = GalatamaStats[uid].totalPoints + totalAdded
                 if not GalatamaStats[uid].catches[galBase] then
-                    GalatamaStats[uid].catches[galBase] = { count = 0, totalWeight = 0 }
+                    GalatamaStats[uid].catches[galBase] = { count = 0, totalPoints = 0 }
                 end
                 GalatamaStats[uid].catches[galBase].count       = GalatamaStats[uid].catches[galBase].count + 1
-                GalatamaStats[uid].catches[galBase].totalWeight = GalatamaStats[uid].catches[galBase].totalWeight + totalAdded
+                GalatamaStats[uid].catches[galBase].totalPoints = GalatamaStats[uid].catches[galBase].totalPoints + totalAdded
             end
-            NameStats[lname].totalWeight = (NameStats[lname].totalWeight or 0) + totalAdded
+            NameStats[lname].totalPoints = (NameStats[lname].totalPoints or 0) + totalAdded
             if not NameStats[lname].catches[galBase] then
-                NameStats[lname].catches[galBase] = { count = 0, totalWeight = 0 }
+                NameStats[lname].catches[galBase] = { count = 0, totalPoints = 0 }
             end
             NameStats[lname].catches[galBase].count       = NameStats[lname].catches[galBase].count + 1
-            NameStats[lname].catches[galBase].totalWeight = NameStats[lname].catches[galBase].totalWeight + totalAdded
+            NameStats[lname].catches[galBase].totalPoints = NameStats[lname].catches[galBase].totalPoints + totalAdded
 
-            local totalNow = (uid and GalatamaStats[uid] and GalatamaStats[uid].totalWeight) or NameStats[lname].totalWeight or 0
+            local totalNow = (uid and GalatamaStats[uid] and GalatamaStats[uid].totalPoints) or NameStats[lname].totalPoints or 0
 
             local galDesc
             if mutasiBonus > 0 then
-                galDesc = "**+" .. FormatWeight(totalAdded) .. "**"
-                    .. " (" .. FormatWeight(rawWeight) .. " weight + " .. FormatWeight(mutasiBonus) .. " bonus mutasi 🌀 *" .. (bonusLabel or mutasi) .. "*)"
-                    .. "\ntotal: **" .. FormatWeight(totalNow) .. "**"
+                galDesc = "**+" .. FormatPoints(totalAdded) .. "**"
+                    .. " (" .. FormatPoints(basePoints) .. " base + " .. FormatPoints(mutasiBonus) .. " bonus mutasi 🌀 *" .. (bonusLabel or mutasi) .. "*)"
+                    .. "\ntotal: **" .. FormatPoints(totalNow) .. "**"
             else
-                galDesc = "**+" .. FormatWeight(totalAdded) .. "**"
+                galDesc = "**+" .. FormatPoints(totalAdded) .. "**"
                 if mutasi then galDesc = galDesc .. " *(mutasi " .. mutasi .. " — no bonus)*" end
-                galDesc = galDesc .. "\ntotal: **" .. FormatWeight(totalNow) .. "**"
+                galDesc = galDesc .. "\ntotal: **" .. FormatPoints(totalNow) .. "**"
             end
 
             table.insert(fields, { name = "⚖️ Galatama", value = galDesc, inline = false })
@@ -1033,7 +1054,7 @@ local function StartMonitoring()
         { name = SEP .. " Host",          value = "**" .. Players.LocalPlayer.Name .. "**",     inline = true  },
         { name = SEP .. " Total Player",  value = "**" .. tostring(#allPlayers) .. "** orang",  inline = true  },
         { name = SEP .. " Daftar Player", value = "```\n" .. table.concat(names, ", ") .. "```", inline = false },
-        { name = "⚖️ Scoring Galatama",   value = "Crystal Goliath | Crystalline Behemoth | Frostborn Shark\nBerdasarkan **Total Weight (kg)**\n🌀 Bonus Mutasi (kecuali Big & Shiny): **+1,000 kg**", inline = false },
+        { name = "⚖️ Scoring Galatama",   value = "Sea Eater: **25,000 pts** | Fluorivane: **15,000 pts** | Deepsea Monster Axolotl: **2,000 pts** | Runic Enchant Stone: **1,200 pts**\n🌀 Bonus Mutasi Sandy/Ghost/Stone/Corrupt/Gold/Frozen/Midnight: **+1,000 pts**\n🌀 Bonus Mutasi Fairy Dust/Gemstone/Lightning/Radioactive/Fire/Aurora: **+10,000 pts**\nBig & Shiny: tidak dihitung", inline = false },
     })
 
     HookChat()
@@ -1075,8 +1096,8 @@ local function StartMonitoring()
         local lname = string.lower(p.Name)
         AvatarCache[p.UserId]                       = GetAvatarUrlById(p.UserId)
         PlayerStats[p.UserId]                       = { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil, name = p.Name }
-        GalatamaStats[p.UserId]                     = { name = p.Name, totalWeight = 0, catches = {} }
-        NameStats[lname]                            = NameStats[lname] or { name = p.Name, secretList = {}, totalWeight = 0, catches = {} }
+        GalatamaStats[p.UserId]                     = { name = p.Name, totalPoints = 0, catches = {} }
+        NameStats[lname]                            = NameStats[lname] or { name = p.Name, secretList = {}, totalPoints = 0, catches = {} }
         PlayerNameToId[string.lower(p.Name)]        = p.UserId
         PlayerNameToId[string.lower(p.DisplayName)] = p.UserId
     end
@@ -1086,8 +1107,8 @@ local function StartMonitoring()
         local lname = string.lower(player.Name)
         LeaveTimers[player.UserId]                          = nil
         PlayerStats[player.UserId]                          = { catchCount = 0, secretList = {}, joinTime = os.time(), lastFishTime = nil, name = player.Name }
-        GalatamaStats[player.UserId]                        = { name = player.Name, totalWeight = 0, catches = {} }
-        NameStats[lname]                                    = NameStats[lname] or { name = player.Name, secretList = {}, totalWeight = 0, catches = {} }
+        GalatamaStats[player.UserId]                        = { name = player.Name, totalPoints = 0, catches = {} }
+        NameStats[lname]                                    = NameStats[lname] or { name = player.Name, secretList = {}, totalPoints = 0, catches = {} }
         PlayerNameToId[string.lower(player.Name)]           = player.UserId
         PlayerNameToId[string.lower(player.DisplayName)]    = player.UserId
         task.spawn(function()
