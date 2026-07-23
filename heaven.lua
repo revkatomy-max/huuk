@@ -65,111 +65,8 @@ local SEP = EMOJI_SEPARATOR
 --  MEMBER LIST
 -- ============================================================
 
-local MemberList = {
-    { username = "zupzupzuppasup",    display = "KEPALASPPGDKIJAKARTA", id = "766292778501275678" },
-    { username = "natadecxco",        display = "natarebus",            id = "638355599574171668" },
-    { username = "kdryvka",           display = "YIYA",                 id = "1312729486067761162" },
-    { username = "cjmin131",          display = "Karaadino",            id = "1506715872612585606" },
-    { username = "x_ibo21",           display = "wowo",                 id = "954296542406246400" },
-    { username = "evosudin",          display = "Bluuism",              id = "875656564931956766" },
-    { username = "minxing_kim",       display = "Minxing",              id = "484295718765461515" },
-    { username = "w4terhyacinth",     display = "waterrr",              id = "1309945598409048076" },
-    { username = "rexlepwz",          display = "Reeamore",             id = "1205780304753725492" },
-    { username = "dekadekadekk",      display = "dekadee",              id = "692735562817470494" },
-    { username = "ceriseciscake",     display = "ciscake",              id = "786950836034994216" },
-    { username = "mnikndy",           display = "prettyv",              id = "1478607686345035880" },
-    { username = "BEJOD06",           display = "MasW",                 id = "1222390041951600640" },
-    { username = "flucidious",        display = "fluc",                 id = "279691238494699530" },
-    { username = "nahaaa01",          display = "naffz",                id = "1392909983678595244" },
-    { username = "AcidReign07",       display = "kiixlau",              id = "1393120438594437161" },
-    { username = "minyaktalon9990",   display = "Revv2",                id = "870201488218157107" },
-    { username = "alleThetwin",       display = "LikeAvillain",         id = "870201488218157107" },
-    { username = "fzallzall",         display = "Ziell",                id = "462346945441038337" },
-    { username = "cecillionz1",       display = "ceceyy",               id = "1404117087303110877" },
-    { username = "zeylith162",        display = "vexara",               id = "1284490745515999282" },
-    { username = "theromantasy",      display = "star",                 id = "1461593359318650880" },
-    { username = "choalyn_2",         display = "Alyn_ikaa",            id = "1467390946357416060" },
-    { username = "Matchafav17",       display = "Macaaa",               id = "1478634976990859304" },
-    { username = "0_Aurorain",        display = "Aurorain",             id = "574581489912643603" },
-    { username = "cobadulumogaseru",  display = "lah",                  id = "1451975194397638676" },
-    { username = "fuxwing",           display = "hanna",                id = "1284490745515999282" },
-    { username = "renjunundip",       display = "aleale",               id = "1428266616763977811" },
-    { username = "iloafieus",         display = "mavis",                id = "1440589079086628998" },
-    { username = "i95jminn",          display = "azkara",               id = "1506715872612585606" },
-    { username = "trianayaa23",       display = "tiarkive",             id = "1425223281686085713" },
-    { username = "longisimusdorsii",  display = "strawberry",           id = "1506324307423526913" },
-    { username = "Thismeann",         display = "Oceann",               id = "1463858926394015838" },
-    { username = "hynad27",           display = "jisoo",                id = "1217043654909366323" },
-    { username = "Bintanggg_1111",    display = "niss",                 id = "574581489912643603" },
-    { username = "Baeforlife",        display = "Jaemin_choa",          id = "1467390946357416060" },
-    { username = "hawaish01",         display = "ilywaa",               id = "1392909983678595244" },
-    { username = "kathzeu",           display = "katzu",                id = "669806652375040022" },
-    { username = "tantecungkring",    display = "Lavvy",                id = "757111417919766648" },
-    { username = "prada2296",         display = "Prada",                id = "1461862687343378468" },
-    { username = "bluesjjong",        display = "raxye",                id = "1205780304753725492" },
-    { username = "Rambo_4200",        display = "RTBxRamboMYST",        id = "1472822553830621362" },
-    { username = "PumpPump369",       display = "PumpPump",             id = "602890650345537555" },
-    { username = "Rainoruby",         display = "rain",                 id = "1395401789561507952" },
-    { username = "Reinoruby",         display = "ujan",                 id = "1395401789561507952" },
-    { username = "Binxxx22",          display = "BinxPVNK77",           id = "952992106421579796" },
-    { username = "Lacherve",          display = "RaraPVNK77",           id = "952992106421579796" },
-    { username = "biruneptunus",      display = "BiruKC",               id = "962866204203167774" },
-    { username = "univastic",         display = "ciel",                 id = "1356280326548230274" },
-    { username = "Rambo_4209",        display = "SHOPEFOOD",            id = "1472822553830621362" },
-    { username = "ZatzaMMay",         display = "TuyulGomenarai",       id = "892353508160970773" },
-    { username = "WaifunyaGomenarai", display = "aci",                  id = "892353508160970773" },
-    { username = "furinyawn",         display = "cipii",                id = "1312729486067761162" },
-    { username = "bbackburney",       display = "neyyina",              id = "1443066200945852477" },
-    { username = "Leale716",          display = "Leaa",                 id = "1408658812424028182" },
-    { username = "aca_ri17",          display = "ricarica",             id = "1471486371377053768" },
-    { username = "keyrannn1",         display = "key",                  id = "1458430632370769972" },
-    { username = "cccaciaa",          display = "chacia",               id = "1427694245455859715" },
-    { username = "Ninym_22N",         display = "Chipii",               id = "688544588830343274" },
-    { username = "23Skuy2",           display = "BLAZE",                id = "786950836034994216" },
-    { username = "waynecalloipe",     display = "ubuungi",              id = "1407648190580133948" },
-    { username = "odegaard030",       display = "Kyye",                 id = "1427694245455859715" },
-    { username = "zielsalvatore",     display = "salva",                id = "1205780304753725492" },
-    { username = "Roikiee1",          display = "Roikiee1",             id = "1447227099206385745" },
-    { username = "Mhrshina",          display = "shina",                id = "1125668364489080933" },
-    { username = "we4thernnoon",      display = "weather",              id = "1125668364489080933" },
-    { username = "andokecheh",        display = "AS×ABMystique_1",      id = "1395401789561507952" },
-    { username = "zakeykim",          display = "moonkim",              id = "1391744350714855425" },
-    { username = "moonlqghts",        display = "moonkim",              id = "1391744350714855425" },
-    { username = "dipyyy",            display = "karyawandripy",        id = "454238781168418826" },
-    { username = "caribbeanight",     display = "holly",                id = "869841474332811274" },
-    { username = "luwepol",           display = "pakmala",              id = "757111417919766648" },
-    { username = "rykalys06",         display = "bebew06",              id = "1488495609961906247" },
-    { username = "thewtrmlnz",        display = "karinateary",          id = "1450346429867622480" },
-    { username = "pwetyyrlie",        display = "lalaloveu",            id = "1402311023918059520" },
-    { username = "Uwellll2",          display = "narumi",               id = "1395401789561507952" },
-    { username = "callmeflaviaa",     display = "Piaa",                 id = "757111417919766648" },
-    { username = "valalily",          display = "valalily",             id = "706512230627278908" },
-    { username = "princekudoo",       display = "shinichi",             id = "757609752149754027" },
-    { username = "pettrichoor",       display = "sugengspakbor",        id = "977807235906404422" },
-    { username = "nicika204",         display = "ikaa",                 id = "1414865637829906544" },
-    { username = "velorisee",         display = "velorisee",            id = "692735562817470494" },
-    { username = "userrxyz2",         display = "alaydf",               id = "1425223281686085713" },
-    { username = "worldofwis",        display = "FUNxWis",              id = "1185617757446873199" },
-    { username = "Ipungkerta7",       display = "Faruq83NXS",           id = "719154955943936090" },
-    { username = "Hyrooboy99",        display = "481HyrooSalvatore",    id = "1309945598409048076" },
-    { username = "ch0colveuuu",       display = "chocoo",               id = "1410918804036390995" },
-    { username = "Th3SwordIsReal",    display = "Yor",                  id = "370151022628175872" },
-    { username = "Blckwv3",           display = "Blackwave",            id = "494856245023604736" },
-    { username = "sheenaraa13",       display = "shennn",               id = "1427694245455859715" },
-    { username = "TalonGiveMeSecret86", display = "Ajudanipung01",      id = "719154955943936090" },
-    { username = "Gomenarai",         display = "Gomenarai",            id = "892353508160970773" },
-    { username = "ninindiy",          display = "cookiedy",             id = "1414865637829906544" },
-    { username = "OliverBMTH98",      display = "Olive",                id = "870201488218157107" },
-    { username = "cherryibloss0m",    display = "calaa",                id = "1408407306579869820" },
-    { username = "Avochildoo",        display = "Avo",                  id = "1203622473955024896" },
-    { username = "raisamaysha",       display = "raisa",                id = "638355599574171668" },
-    { username = "sotyaimoet00",      display = "rawr",                 id = "638355599574171668" },
-    { username = "archivistie",       display = "archie",               id = "1138846592800129057" },
-    { username = "ichinoese",         display = "adza",                 id = "1138846592800129057" },
-    { username = "loryn2509",         display = "oyiN",                 id = "1138846592800129057" },
-    { username = "xxxkidbloxian1",    display = "coco",                 id = "1138846592800129057" },
-    { username = "aumiora",           display = "acil",                 id = "1138846592800129057" },
-}
+local MemberList = {} -- dikosongkan sesuai request. GetMention/BuildMentionCache tetap aman
+                       -- (mention cuma bakal kosong "" kalau nggak ada member terdaftar).
 
 -- ============================================================
 --  DATABASE
@@ -253,6 +150,7 @@ local GalatamaMutasiPoints = {
     ["gold"]        = 1000,
     ["frozen"]      = 1000,
     ["midnight"]    = 1000,
+    ["albino"]      = 1000,
     ["fairy dust"]  = 10000,
     ["gemstone"]    = 10000,
     ["lightning"]   = 10000,
@@ -725,14 +623,30 @@ local function FindLegendaryCrystal(fishName)
     return nil
 end
 
--- Cari poin bonus mutasi Galatama. Return 0 kalau mutasi kosong, Big/Shiny, atau tidak dikenal.
+-- Cari poin bonus mutasi Galatama. Beda dari sebelumnya: dulu exact-match SELURUH teks mutasi,
+-- jadi "SANDY Big" gagal match "sandy" (karena ada "Big" nempel). Sekarang dicek per-kata/frasa
+-- pakai word-boundary (mirip FindMutasi), jadi "SANDY Big" tetep kena bonus dari kata "Sandy",
+-- sementara "Big" sendiri (bukan mutasi beneran) otomatis diabaikan karena gak ada di list.
+-- Kalau ada lebih dari 1 mutasi valid yang match, poinnya DIJUMLAH semua.
 local function GetGalatamaMutasiPoints(mutasi)
     if not mutasi or mutasi == "" then return 0, nil end
-    local ml = mutasi:lower()
+    local lower = mutasi:lower()
+    local totalPts = 0
+    local matchedNames = {}
     for name, pts in pairs(GalatamaMutasiPoints) do
-        if ml == name then return pts, mutasi end
+        local s = string.find(lower, name, 1, true)
+        if s then
+            local beforeOk = (s == 1) or (lower:sub(s - 1, s - 1) == " ")
+            local afterPos = s + #name
+            local afterOk  = (afterPos > #lower) or (lower:sub(afterPos, afterPos) == " ")
+            if beforeOk and afterOk then
+                totalPts = totalPts + pts
+                table.insert(matchedNames, name)
+            end
+        end
     end
-    return 0, nil
+    if totalPts == 0 then return 0, nil end
+    return totalPts, table.concat(matchedNames, " + ")
 end
 
 local function FindGalatamaFish(baseName)
@@ -1169,7 +1083,7 @@ local function SendGalatamaLeaderboard()
         avatar_url = WEBHOOK_AVATAR,
         embeds     = { BuildEmbed(
             "🏆 LEADERBOARD GALATAMA",
-            "```\nIkan: Sea Eater (25,000) | Fluorivane (15,000) | Deepsea Monster Axolotl (2,000) | Runic Enchant Stone (1,200)\nBonus Mutasi: Sandy/Ghost/Stone/Corrupt/Gold/Frozen/Midnight +1,000 | Fairy Dust/Gemstone/Lightning/Radioactive/Fire/Aurora +10,000\nBig & Shiny: tidak dihitung\n```",
+            "```\nIkan: Sea Eater (25,000) | Fluorivane (15,000) | Deepsea Monster Axolotl (2,000) | Runic Enchant Stone (1,200)\nBonus Mutasi: Sandy/Ghost/Stone/Corrupt/Gold/Frozen/Midnight/Albino +1,000 | Fairy Dust/Gemstone/Lightning/Radioactive/Fire/Aurora +10,000\nBig & Shiny: tidak dihitung\n```",
             16766720, fields, nil, nil, "BLOX Gank Galatama"
         )},
     })
