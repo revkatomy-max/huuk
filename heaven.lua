@@ -1373,23 +1373,28 @@ local function CheckAndSend(rawMsg)
         }
 
         -- Galatama point scoring
+        -- NOTE: dulu syaratnya "galBase and uid" -- kalau uid nggak kedapetan (player belum
+        -- ke-index ke PlayerNameToId, misal chat test manual), field Galatama SKIP TOTAL diem-diem.
+        -- Sekarang pakai fallback key nama (lowercase) kalau uid nil, jadi poin selalu kehitung
+        -- & field-nya selalu muncul asal ikannya emang salah satu dari GalatamaFishPoints.
         local galBase = FindGalatamaFish(baseName)
-        if galBase and uid then
-            if not GalatamaStats[uid] then
-                GalatamaStats[uid] = { name = data.player, totalPoints = 0, catches = {} }
+        if galBase then
+            local galKey = uid or ("name:" .. string.lower(data.player))
+            if not GalatamaStats[galKey] then
+                GalatamaStats[galKey] = { name = data.player, totalPoints = 0, catches = {} }
             end
             local basePoints = GalatamaFishPoints[galBase]
             local mutasiBonus, bonusLabel = GetGalatamaMutasiPoints(mutasi)
             local totalAdded = basePoints + mutasiBonus
 
-            GalatamaStats[uid].totalPoints = GalatamaStats[uid].totalPoints + totalAdded
-            if not GalatamaStats[uid].catches[galBase] then
-                GalatamaStats[uid].catches[galBase] = { count = 0, totalPoints = 0 }
+            GalatamaStats[galKey].totalPoints = GalatamaStats[galKey].totalPoints + totalAdded
+            if not GalatamaStats[galKey].catches[galBase] then
+                GalatamaStats[galKey].catches[galBase] = { count = 0, totalPoints = 0 }
             end
-            GalatamaStats[uid].catches[galBase].count       = GalatamaStats[uid].catches[galBase].count + 1
-            GalatamaStats[uid].catches[galBase].totalPoints = GalatamaStats[uid].catches[galBase].totalPoints + totalAdded
+            GalatamaStats[galKey].catches[galBase].count       = GalatamaStats[galKey].catches[galBase].count + 1
+            GalatamaStats[galKey].catches[galBase].totalPoints = GalatamaStats[galKey].catches[galBase].totalPoints + totalAdded
 
-            local totalNow = GalatamaStats[uid].totalPoints
+            local totalNow = GalatamaStats[galKey].totalPoints
 
             local galDesc
             if mutasiBonus > 0 then
