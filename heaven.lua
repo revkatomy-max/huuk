@@ -658,6 +658,33 @@ local function FindGalatamaFish(baseName)
     return nil
 end
 
+-- Resolve key GalatamaStats buat player ini. Kalau uid ADA dan sebelumnya sempat ada catch
+-- yang kesimpen pakai fallback key nama (waktu uid-nya belum kedeteksi), stat lama itu
+-- otomatis di-MERGE ke entry uid, terus fallback key-nya dibuang -- jadi nggak kepecah
+-- jadi 2 baris beda di leaderboard begitu player-nya udah ke-index normal.
+local function ResolveGalatamaKey(uid, playerName)
+    local nameKey = "name:" .. string.lower(playerName)
+    if not uid then
+        return nameKey
+    end
+    local nameEntry = GalatamaStats[nameKey]
+    if nameEntry then
+        if not GalatamaStats[uid] then
+            GalatamaStats[uid] = { name = playerName, totalPoints = 0, catches = {} }
+        end
+        GalatamaStats[uid].totalPoints = GalatamaStats[uid].totalPoints + (nameEntry.totalPoints or 0)
+        for fishName, catchData in pairs(nameEntry.catches or {}) do
+            if not GalatamaStats[uid].catches[fishName] then
+                GalatamaStats[uid].catches[fishName] = { count = 0, totalPoints = 0 }
+            end
+            GalatamaStats[uid].catches[fishName].count       = GalatamaStats[uid].catches[fishName].count + (catchData.count or 0)
+            GalatamaStats[uid].catches[fishName].totalPoints = GalatamaStats[uid].catches[fishName].totalPoints + (catchData.totalPoints or 0)
+        end
+        GalatamaStats[nameKey] = nil
+    end
+    return uid
+end
+
 local function GetFishImageId(item)
     for _, desc in ipairs(item:GetDescendants()) do
         local ok, val = pcall(function()
@@ -1291,9 +1318,10 @@ local function CheckAndSend(rawMsg)
         -- ke-index ke PlayerNameToId, misal chat test manual), field Galatama SKIP TOTAL diem-diem.
         -- Sekarang pakai fallback key nama (lowercase) kalau uid nil, jadi poin selalu kehitung
         -- & field-nya selalu muncul asal ikannya emang salah satu dari GalatamaFishPoints.
+        -- ResolveGalatamaKey juga otomatis MERGE stat lama (fallback key) begitu uid ketemu.
         local galBase = FindGalatamaFish(baseName)
         if galBase then
-            local galKey = uid or ("name:" .. string.lower(data.player))
+            local galKey = ResolveGalatamaKey(uid, data.player)
             if not GalatamaStats[galKey] then
                 GalatamaStats[galKey] = { name = data.player, totalPoints = 0, catches = {} }
             end
@@ -1448,6 +1476,7 @@ local function StartMonitoring()
         PlayerNameToId[string.lower(p.Name)]        = p.UserId
         PlayerNameToId[string.lower(p.DisplayName)] = p.UserId
         BuildMentionCache(p.Name, p.DisplayName)
+        ResolveGalatamaKey(p.UserId, p.Name) -- gabungin stray stat Galatama (fallback key nama) kalau ada
     end
 
     Players.PlayerAdded:Connect(function(player)
@@ -1457,6 +1486,7 @@ local function StartMonitoring()
         PlayerNameToId[string.lower(player.Name)]        = player.UserId
         PlayerNameToId[string.lower(player.DisplayName)] = player.UserId
         BuildMentionCache(player.Name, player.DisplayName)
+        ResolveGalatamaKey(player.UserId, player.Name) -- gabungin stray stat Galatama (fallback key nama) kalau ada
         task.spawn(function()
             task.wait(1)
             AvatarCache[player.UserId] = GetAvatarUrlById(player.UserId)
