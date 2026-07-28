@@ -36,6 +36,7 @@ local TierColors = {
     Forgotten = 15263976,
     Ruby      = 16753920,
     Legendary = 3407871,
+    Mythic    = 10181046,
     Mutasi    = 16776960,
     Join      = 65280,
     Leave     = 16729344,
@@ -59,6 +60,7 @@ local EMOJI_LEAVE      = "<a:leave:1517738147914711190>"
 local EMOJI_NOTBACK    = "<a:jam:1517740557445894194>"
 local EMOJI_CHECK      = "🔍"
 local EMOJI_LOCATION   = "📍"
+local EMOJI_MYTHIC     = "🔱" -- belum ada custom emoji Discord buat tier ini, pakai unicode dulu
 local SEP = EMOJI_SEPARATOR
 
 -- ============================================================
@@ -134,30 +136,32 @@ local LegendaryCrystalList = {
 --  GALATAMA EVENT — POINT BASED
 -- ============================================================
 
+-- Ikan tier SECRET yang kena hitungan poin Galatama.
 local GalatamaFishPoints = {
-    ["Sea Eater"]                = 25000,
-    ["Fluorivane"]               = 15000,
-    ["Deepsea Monster Axolotl"]  = 2000,
-    ["Runic Enchant Stone"]      = 1200,
+    ["Blob Shark"]        = 250,
+    ["Ghost Shark"]       = 500,
+    ["Skeleton Narwhal"]  = 600,
+    ["Worm Fish"]         = 3000,
+    ["Glacial Serpent"]   = 6000,
 }
 
--- Bonus poin mutasi (2 tier). Mutasi di luar list ini (termasuk Big & Shiny) = tidak dihitung.
-local GalatamaMutasiPoints = {
-    ["sandy"]       = 1000,
-    ["ghost"]       = 1000,
-    ["stone"]       = 1000,
-    ["corrupt"]     = 1000,
-    ["gold"]        = 1000,
-    ["frozen"]      = 1000,
-    ["midnight"]    = 1000,
-    ["albino"]      = 1000,
-    ["fairy dust"]  = 10000,
-    ["gemstone"]    = 10000,
-    ["lightning"]   = 10000,
-    ["radioactive"] = 10000,
-    ["fire"]        = 10000,
-    ["aurora"]      = 10000,
+-- Bonus mutasi buat ikan tier SECRET: FLAT, semua jenis mutasi dapet poin yang sama,
+-- KECUALI Big & Shiny (dua itu bukan mutasi beneran, cuma qualifier ukuran/visual).
+local GALATAMA_SECRET_MUTASI_BONUS = 600
+
+-- Ikan tier MYTHIC (tier baru, terpisah dari SecretFishList) + poin base-nya.
+local MythicList = {
+    "Manta Ray", "Hammerhead Shark", "Sharp One",
 }
+
+local MythicFishPoints = {
+    ["Manta Ray"]        = 50,
+    ["Hammerhead Shark"] = 100,
+    ["Sharp One"]        = 105,
+}
+
+-- Bonus mutasi buat ikan tier MYTHIC: FLAT juga, kecuali Big & Shiny.
+local GALATAMA_MYTHIC_MUTASI_BONUS = 200
 
 local FishChanceData = {
     ["Crystal Crab"]              = "1 in 750K",
@@ -623,30 +627,23 @@ local function FindLegendaryCrystal(fishName)
     return nil
 end
 
--- Cari poin bonus mutasi Galatama. Beda dari sebelumnya: dulu exact-match SELURUH teks mutasi,
--- jadi "SANDY Big" gagal match "sandy" (karena ada "Big" nempel). Sekarang dicek per-kata/frasa
--- pakai word-boundary (mirip FindMutasi), jadi "SANDY Big" tetep kena bonus dari kata "Sandy",
--- sementara "Big" sendiri (bukan mutasi beneran) otomatis diabaikan karena gak ada di list.
--- Kalau ada lebih dari 1 mutasi valid yang match, poinnya DIJUMLAH semua.
-local function GetGalatamaMutasiPoints(mutasi)
+-- Cari bonus mutasi FLAT (dipakai buat Secret & Mythic, tinggal beda angka flatAmount-nya).
+-- Mutasi dicek per-kata: kalau ADA minimal 1 kata yang bukan "big"/"shiny", berarti ada
+-- mutasi beneran -> dapet flatAmount. Kalau mutasi kosong, atau isinya cuma "Big"/"Shiny"
+-- doang (tanpa mutasi beneran), bonusnya 0.
+local function GetFlatMutasiBonus(mutasi, flatAmount)
     if not mutasi or mutasi == "" then return 0, nil end
-    local lower = mutasi:lower()
-    local totalPts = 0
-    local matchedNames = {}
-    for name, pts in pairs(GalatamaMutasiPoints) do
-        local s = string.find(lower, name, 1, true)
-        if s then
-            local beforeOk = (s == 1) or (lower:sub(s - 1, s - 1) == " ")
-            local afterPos = s + #name
-            local afterOk  = (afterPos > #lower) or (lower:sub(afterPos, afterPos) == " ")
-            if beforeOk and afterOk then
-                totalPts = totalPts + pts
-                table.insert(matchedNames, name)
-            end
+    local hasQualifying = false
+    local labelWords = {}
+    for word in mutasi:gmatch("%S+") do
+        local wl = word:lower()
+        if wl ~= "big" and wl ~= "shiny" then
+            hasQualifying = true
+            table.insert(labelWords, word)
         end
     end
-    if totalPts == 0 then return 0, nil end
-    return totalPts, table.concat(matchedNames, " + ")
+    if not hasQualifying then return 0, nil end
+    return flatAmount, table.concat(labelWords, " ")
 end
 
 local function FindGalatamaFish(baseName)
@@ -656,6 +653,31 @@ local function FindGalatamaFish(baseName)
         if lower == name:lower() then return name end
     end
     return nil
+end
+
+-- Deteksi ikan tier MYTHIC, sama persis logic-nya kayak FindSecretFish tapi buat MythicList.
+local function FindMythicFish(fishName)
+    local lower = string.lower(fishName)
+    for _, baseName in ipairs(MythicList) do
+        if lower == string.lower(baseName) then return baseName, nil end
+    end
+    local bestBase, bestLen, bestMutasi = nil, 0, nil
+    for _, baseName in ipairs(MythicList) do
+        local s = string.find(lower, string.lower(baseName), 1, true)
+        if s then
+            local mutasi = nil
+            if s > 1 then
+                mutasi = fishName:sub(1, s - 1):match("^%s*(.-)%s*$")
+                if mutasi == "" then mutasi = nil end
+            end
+            if #baseName > bestLen then
+                bestLen    = #baseName
+                bestBase   = baseName
+                bestMutasi = mutasi
+            end
+        end
+    end
+    return bestBase, bestMutasi
 end
 
 -- Resolve key GalatamaStats buat player ini. Kalau uid ADA dan sebelumnya sempat ada catch
@@ -683,6 +705,39 @@ local function ResolveGalatamaKey(uid, playerName)
         GalatamaStats[nameKey] = nil
     end
     return uid
+end
+
+-- Terapkan scoring poin Galatama (dipakai bareng buat tier SECRET & MYTHIC, tinggal beda
+-- basePoints/flatBonusAmount) dan nambahin field "⚖️ Galatama" ke embed fields.
+local function ApplyGalatamaScoring(fields, uid, playerName, galBase, basePoints, mutasi, flatBonusAmount)
+    local galKey = ResolveGalatamaKey(uid, playerName)
+    if not GalatamaStats[galKey] then
+        GalatamaStats[galKey] = { name = playerName, totalPoints = 0, catches = {} }
+    end
+    local mutasiBonus, bonusLabel = GetFlatMutasiBonus(mutasi, flatBonusAmount)
+    local totalAdded = basePoints + mutasiBonus
+
+    GalatamaStats[galKey].totalPoints = GalatamaStats[galKey].totalPoints + totalAdded
+    if not GalatamaStats[galKey].catches[galBase] then
+        GalatamaStats[galKey].catches[galBase] = { count = 0, totalPoints = 0 }
+    end
+    GalatamaStats[galKey].catches[galBase].count       = GalatamaStats[galKey].catches[galBase].count + 1
+    GalatamaStats[galKey].catches[galBase].totalPoints = GalatamaStats[galKey].catches[galBase].totalPoints + totalAdded
+
+    local totalNow = GalatamaStats[galKey].totalPoints
+
+    local galDesc
+    if mutasiBonus > 0 then
+        galDesc = "**+" .. FormatPoints(totalAdded) .. "**"
+            .. " (" .. FormatPoints(basePoints) .. " base + " .. FormatPoints(mutasiBonus) .. " bonus mutasi 🌀 *" .. (bonusLabel or mutasi) .. "*)"
+            .. "\ntotal: **" .. FormatPoints(totalNow) .. "**"
+    else
+        galDesc = "**+" .. FormatPoints(totalAdded) .. "**"
+        if mutasi then galDesc = galDesc .. " *(mutasi " .. mutasi .. " — no bonus)*" end
+        galDesc = galDesc .. "\ntotal: **" .. FormatPoints(totalNow) .. "**"
+    end
+
+    table.insert(fields, { name = "⚖️ Galatama", value = galDesc, inline = false })
 end
 
 local function GetFishImageId(item)
@@ -1110,7 +1165,7 @@ local function SendGalatamaLeaderboard()
         avatar_url = WEBHOOK_AVATAR,
         embeds     = { BuildEmbed(
             "🏆 LEADERBOARD GALATAMA",
-            "```\nIkan: Sea Eater (25,000) | Fluorivane (15,000) | Deepsea Monster Axolotl (2,000) | Runic Enchant Stone (1,200)\nBonus Mutasi: Sandy/Ghost/Stone/Corrupt/Gold/Frozen/Midnight/Albino +1,000 | Fairy Dust/Gemstone/Lightning/Radioactive/Fire/Aurora +10,000\nBig & Shiny: tidak dihitung\n```",
+            "```\n[SECRET] Blob Shark (250) | Ghost Shark (500) | Skeleton Narwhal (600) | Worm Fish (3,000) | Glacial Serpent (6,000)\nBonus Mutasi Secret: semua mutasi +600 (kecuali Big & Shiny)\n\n[MYTHIC] Manta Ray (50) | Hammerhead Shark (100) | Sharp One (105)\nBonus Mutasi Mythic: semua mutasi +200 (kecuali Big & Shiny)\n```",
             16766720, fields, nil, nil, "BLOX Gank Galatama"
         )},
     })
@@ -1293,6 +1348,22 @@ local function CheckAndSend(rawMsg)
         return
     end
 
+    local mythicBase, mythicMutasi = FindMythicFish(data.fish)
+    if mythicBase then
+        local imageUrl = GetFishImageURL(mythicBase) or (FishImageCache[mythicBase] and (PROXY .. "/asset/" .. FishImageCache[mythicBase]))
+        local mythicMutasiField = mythicMutasi and (EMOJI_MUTASI .. " *" .. mythicMutasi .. "*") or "—"
+        local fields = {
+            { name = SEP .. " Pemain", value = "**" .. data.player .. "**", inline = true },
+            { name = SEP .. " Ikan",   value = "**" .. data.fish .. "**",   inline = true },
+            { name = SEP .. " Berat",  value = "**" .. data.weight .. "**", inline = true },
+            { name = SEP .. " Mutasi", value = mythicMutasiField,           inline = true },
+        }
+        -- Bonus mutasi tier Mythic: FLAT 200 (kecuali Big/Shiny)
+        ApplyGalatamaScoring(fields, uid, data.player, mythicBase, MythicFishPoints[mythicBase], mythicMutasi, GALATAMA_MYTHIC_MUTASI_BONUS)
+        SendFishWebhook(EMOJI_MYTHIC .. " Mythic Tier Detected!", " " .. EMOJI_MYTHIC, TierColors.Mythic, fields, nil, imageUrl, GetMention(data.player), "secret")
+        return
+    end
+
     local baseName, mutasi = FindSecretFish(data.fish)
     if baseName then
         local imageUrl = GetFishImageURL(baseName) or (FishImageCache[baseName] and (PROXY .. "/asset/" .. FishImageCache[baseName]))
@@ -1313,43 +1384,10 @@ local function CheckAndSend(rawMsg)
             { name = SEP .. " Chance", value = chanceInfo,                   inline = true },
         }
 
-        -- Galatama point scoring
-        -- NOTE: dulu syaratnya "galBase and uid" -- kalau uid nggak kedapetan (player belum
-        -- ke-index ke PlayerNameToId, misal chat test manual), field Galatama SKIP TOTAL diem-diem.
-        -- Sekarang pakai fallback key nama (lowercase) kalau uid nil, jadi poin selalu kehitung
-        -- & field-nya selalu muncul asal ikannya emang salah satu dari GalatamaFishPoints.
-        -- ResolveGalatamaKey juga otomatis MERGE stat lama (fallback key) begitu uid ketemu.
+        -- Galatama point scoring (tier Secret) -- bonus mutasi FLAT 600 (kecuali Big/Shiny)
         local galBase = FindGalatamaFish(baseName)
         if galBase then
-            local galKey = ResolveGalatamaKey(uid, data.player)
-            if not GalatamaStats[galKey] then
-                GalatamaStats[galKey] = { name = data.player, totalPoints = 0, catches = {} }
-            end
-            local basePoints = GalatamaFishPoints[galBase]
-            local mutasiBonus, bonusLabel = GetGalatamaMutasiPoints(mutasi)
-            local totalAdded = basePoints + mutasiBonus
-
-            GalatamaStats[galKey].totalPoints = GalatamaStats[galKey].totalPoints + totalAdded
-            if not GalatamaStats[galKey].catches[galBase] then
-                GalatamaStats[galKey].catches[galBase] = { count = 0, totalPoints = 0 }
-            end
-            GalatamaStats[galKey].catches[galBase].count       = GalatamaStats[galKey].catches[galBase].count + 1
-            GalatamaStats[galKey].catches[galBase].totalPoints = GalatamaStats[galKey].catches[galBase].totalPoints + totalAdded
-
-            local totalNow = GalatamaStats[galKey].totalPoints
-
-            local galDesc
-            if mutasiBonus > 0 then
-                galDesc = "**+" .. FormatPoints(totalAdded) .. "**"
-                    .. " (" .. FormatPoints(basePoints) .. " base + " .. FormatPoints(mutasiBonus) .. " bonus mutasi 🌀 *" .. (bonusLabel or mutasi) .. "*)"
-                    .. "\ntotal: **" .. FormatPoints(totalNow) .. "**"
-            else
-                galDesc = "**+" .. FormatPoints(totalAdded) .. "**"
-                if mutasi then galDesc = galDesc .. " *(mutasi " .. mutasi .. " — no bonus)*" end
-                galDesc = galDesc .. "\ntotal: **" .. FormatPoints(totalNow) .. "**"
-            end
-
-            table.insert(fields, { name = "⚖️ Galatama", value = galDesc, inline = false })
+            ApplyGalatamaScoring(fields, uid, data.player, galBase, GalatamaFishPoints[galBase], mutasi, GALATAMA_SECRET_MUTASI_BONUS)
         end
 
         if isForgotten then
