@@ -156,8 +156,8 @@ local MythicList = {
 
 local MythicFishPoints = {
     ["Manta Ray"]        = 50,
-    ["Hammerhead Shark"] = 100,
-    ["Sharp One"]        = 105,
+    ["Hammerhead Shark"] = 50,
+    ["Sharp One"]        = 50,
 }
 
 -- Bonus mutasi buat ikan tier MYTHIC: FLAT juga, kecuali Big & Shiny.
