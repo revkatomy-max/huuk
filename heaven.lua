@@ -67,8 +67,128 @@ local SEP = EMOJI_SEPARATOR
 --  MEMBER LIST
 -- ============================================================
 
-local MemberList = {} -- dikosongkan sesuai request. GetMention/BuildMentionCache tetap aman
-                       -- (mention cuma bakal kosong "" kalau nggak ada member terdaftar).
+local MemberList = {
+    { username = "zupzupzuppasup",    display = "KEPALASPPGDKIJAKARTA", id = "766292778501275678" },
+    { username = "natadecxco",        display = "natarebus",            id = "638355599574171668" },
+    { username = "kdryvka",           display = "YIYA",                 id = "1312729486067761162" },
+    { username = "cjmin131",          display = "Karaadino",            id = "1506715872612585606" },
+    { username = "x_ibo21",           display = "wowo",                 id = "954296542406246400" },
+    { username = "evosudin",          display = "Bluuism",              id = "875656564931956766" },
+    { username = "minxing_kim",       display = "Minxing",              id = "484295718765461515" },
+    { username = "w4terhyacinth",     display = "waterrr",              id = "1309945598409048076" },
+    { username = "rexlepwz",          display = "Reeamore",             id = "1205780304753725492" },
+    { username = "dekadekadekk",      display = "dekadee",              id = "692735562817470494" },
+    { username = "ceriseciscake",     display = "ciscake",              id = "786950836034994216" },
+    { username = "mnikndy",           display = "prettyv",              id = "1478607686345035880" },
+    { username = "BEJOD06",           display = "MasW",                 id = "1222390041951600640" },
+    { username = "flucidious",        display = "fluc",                 id = "279691238494699530" },
+    { username = "nahaaa01",          display = "naffz",                id = "1392909983678595244" },
+    { username = "AcidReign07",       display = "kiixlau",              id = "1393120438594437161" },
+    { username = "minyaktalon9990",   display = "Revv2",                id = "870201488218157107" },
+    { username = "alleThetwin",       display = "LikeAvillain",         id = "870201488218157107" },
+    { username = "fzallzall",         display = "Ziell",                id = "462346945441038337" },
+    { username = "cecillionz1",       display = "ceceyy",               id = "1404117087303110877" },
+    { username = "zeylith162",        display = "vexara",               id = "1284490745515999282" },
+    { username = "theromantasy",      display = "star",                 id = "1461593359318650880" },
+    { username = "choalyn_2",         display = "Alyn_ikaa",            id = "1467390946357416060" },
+    { username = "Matchafav17",       display = "Macaaa",               id = "1478634976990859304" },
+    { username = "0_Aurorain",        display = "Aurorain",             id = "574581489912643603" },
+    { username = "cobadulumogaseru",  display = "lah",                  id = "1451975194397638676" },
+    { username = "fuxwing",           display = "hanna",                id = "1284490745515999282" },
+    { username = "renjunundip",       display = "aleale",               id = "1428266616763977811" },
+    { username = "iloafieus",         display = "mavis",                id = "1440589079086628998" },
+    { username = "i95jminn",          display = "azkara",               id = "1506715872612585606" },
+    { username = "trianayaa23",       display = "tiarkive",             id = "1425223281686085713" },
+    { username = "longisimusdorsii",  display = "strawberry",           id = "1506324307423526913" },
+    { username = "Thismeann",         display = "Oceann",               id = "1463858926394015838" },
+    { username = "hynad27",           display = "jisoo",                id = "1217043654909366323" },
+    { username = "Bintanggg_1111",    display = "niss",                 id = "574581489912643603" },
+    { username = "Baeforlife",        display = "Jaemin_choa",          id = "1467390946357416060" },
+    { username = "hawaish01",         display = "ilywaa",               id = "1392909983678595244" },
+    { username = "kathzeu",           display = "katzu",                id = "669806652375040022" },
+    { username = "tantecungkring",    display = "Lavvy",                id = "757111417919766648" },
+    { username = "prada2296",         display = "Prada",                id = "1461862687343378468" },
+    { username = "bluesjjong",        display = "raxye",                id = "1205780304753725492" },
+    { username = "Rambo_4200",        display = "RTBxRamboMYST",        id = "1472822553830621362" },
+    { username = "PumpPump369",       display = "PumpPump",             id = "602890650345537555" },
+    { username = "Rainoruby",         display = "rain",                 id = "1395401789561507952" },
+    { username = "Reinoruby",         display = "ujan",                 id = "1395401789561507952" },
+    { username = "Binxxx22",          display = "BinxPVNK77",           id = "952992106421579796" },
+    { username = "Lacherve",          display = "RaraPVNK77",           id = "952992106421579796" },
+    { username = "biruneptunus",      display = "BiruKC",               id = "962866204203167774" },
+    { username = "univastic",         display = "ciel",                 id = "1356280326548230274" },
+    { username = "Rambo_4209",        display = "SHOPEFOOD",            id = "1472822553830621362" },
+    { username = "ZatzaMMay",         display = "TuyulGomenarai",       id = "892353508160970773" },
+    { username = "WaifunyaGomenarai", display = "aci",                  id = "892353508160970773" },
+    { username = "furinyawn",         display = "cipii",                id = "1312729486067761162" },
+    { username = "bbackburney",       display = "neyyina",              id = "1443066200945852477" },
+    { username = "Leale716",          display = "Leaa",                 id = "1408658812424028182" },
+    { username = "aca_ri17",          display = "ricarica",             id = "1471486371377053768" },
+    { username = "keyrannn1",         display = "key",                  id = "1458430632370769972" },
+    { username = "cccaciaa",          display = "chacia",               id = "1427694245455859715" },
+    { username = "Ninym_22N",         display = "Chipii",               id = "688544588830343274" },
+    { username = "23Skuy2",           display = "BLAZE",                id = "786950836034994216" },
+    { username = "waynecalloipe",     display = "ubuungi",              id = "1407648190580133948" },
+    { username = "odegaard030",       display = "Kyye",                 id = "1427694245455859715" },
+    { username = "zielsalvatore",     display = "salva",                id = "1205780304753725492" },
+    { username = "Roikiee1",          display = "Roikiee1",             id = "1447227099206385745" },
+    { username = "Mhrshina",          display = "shina",                id = "1125668364489080933" },
+    { username = "we4thernnoon",      display = "weather",              id = "1125668364489080933" },
+    { username = "andokecheh",        display = "AS×ABMystique_1",      id = "1395401789561507952" },
+    { username = "zakeykim",          display = "moonkim",              id = "1391744350714855425" },
+    { username = "moonlqghts",        display = "moonkim",              id = "1391744350714855425" },
+    { username = "dipyyy",            display = "karyawandripy",        id = "454238781168418826" },
+    { username = "caribbeanight",     display = "holly",                id = "869841474332811274" },
+    { username = "luwepol",           display = "pakmala",              id = "757111417919766648" },
+    { username = "rykalys06",         display = "bebew06",              id = "1488495609961906247" },
+    { username = "thewtrmlnz",        display = "karinateary",          id = "1450346429867622480" },
+    { username = "pwetyyrlie",        display = "lalaloveu",            id = "1402311023918059520" },
+    { username = "Uwellll2",          display = "narumi",               id = "1395401789561507952" },
+    { username = "callmeflaviaa",     display = "Piaa",                 id = "757111417919766648" },
+    { username = "valalily",          display = "valalily",             id = "706512230627278908" },
+    { username = "princekudoo",       display = "shinichi",             id = "757609752149754027" },
+    { username = "pettrichoor",       display = "sugengspakbor",        id = "977807235906404422" },
+    { username = "nicika204",         display = "ikaa",                 id = "1414865637829906544" },
+    { username = "velorisee",         display = "velorisee",            id = "692735562817470494" },
+    { username = "userrxyz2",         display = "alaydf",               id = "1425223281686085713" },
+    { username = "worldofwis",        display = "FUNxWis",              id = "1185617757446873199" },
+    { username = "Ipungkerta7",       display = "Faruq83NXS",           id = "719154955943936090" },
+    { username = "Hyrooboy99",        display = "481HyrooSalvatore",    id = "1309945598409048076" },
+    { username = "ch0colveuuu",       display = "chocoo",               id = "1410918804036390995" },
+    { username = "Th3SwordIsReal",    display = "Yor",                  id = "370151022628175872" },
+    { username = "Blckwv3",           display = "Blackwave",            id = "494856245023604736" },
+    { username = "sheenaraa13",       display = "shennn",               id = "1427694245455859715" },
+    { username = "TalonGiveMeSecret86", display = "Ajudanipung01",      id = "719154955943936090" },
+    { username = "Gomenarai",         display = "Gomenarai",            id = "892353508160970773" },
+    { username = "ninindiy",          display = "cookiedy",             id = "1414865637829906544" },
+    { username = "OliverBMTH98",      display = "Olive",                id = "870201488218157107" },
+    { username = "cherryibloss0m",    display = "calaa",                id = "1408407306579869820" },
+    { username = "Avochildoo",        display = "Avo",                  id = "1203622473955024896" },
+    { username = "raisamaysha",       display = "raisa",                id = "638355599574171668" },
+    { username = "sotyaimoet00",      display = "rawr",                 id = "638355599574171668" },
+    { username = "archivistie",       display = "archie",               id = "1138846592800129057" },
+    { username = "ichinoese",         display = "adza",                 id = "1138846592800129057" },
+    { username = "loryn2509",         display = "oyiN",                 id = "1138846592800129057" },
+    { username = "xxxkidbloxian1",    display = "coco",                 id = "1138846592800129057" },
+    { username = "aumiora",           display = "acil",                 id = "1138846592800129057" },
+    { username = "dinolutsyu131",     display = "dinoyaaa",              id = "1398328850793889872" },
+    { username = "theagcd0",          display = "Shirohige",             id = "1401956495788085411" },
+    { username = "Kurohige241206",    display = "Kurohige",              id = "1401956495788085411" },
+    { username = "Klerra_Asu",        display = "Klerra_SYAIF",          id = "1171410071092215888" },
+    { username = "OomKlerra2",        display = "OomKlerra2",            id = "1171410071092215888" },
+    { username = "Aisyqu77",          display = "SPVxAizzz",             id = "924386459283230750" },
+    { username = "Sptdjars",          display = "Sptdjars",              id = "1447227099206385745" },
+    { username = "3to3meow",          display = "3to3meow",              id = "1428804537061212173" },
+    { username = "shinarugi",         display = "gie",             id = "748417496020942869" },
+    { username = "sintiadche",        display = "sintiadche",            id = "1428804537061212173" },
+    { username = "panjulll63",        display = "OSCARxBojonggede",      id = "1382874484448694312" },
+    { username = "amerissano",        display = "amerissano",            id = "1420931573905100920" },
+    { username = "Alyn_ikaa",         display = "Choalyn_2",             id = "1467390946357416060" },
+    { username = "Rainzy214",         display = "Rigell",                id = "1428750848724566149" },
+    { username = "bodrexin1904", display = "codotparker",                id = "1462151652688662549" },
+    { username = "Cameron_G85", display = "ayess",                       id = "1451548051255726303" },
+    { username = "adniida", display = "piskyy",                          id = "1396834655889653790" },
+}
 
 -- ============================================================
 --  DATABASE
@@ -95,16 +215,17 @@ local SecretFishList = {
     "Frostmoon Whale", "Crystal Goliath", "Eggy Enchant Stone", "Dark Megalodon",
     "Elemental Tempestray", "Glacial Serpent", "Caustic Maw", "Coral Reaper",
     "Sunken Hadalith", "Trench Warden", "Caeruleum Razerback", "Two-headed shark", "Ragnarex",
+    "Colossal Shipwreck Crab", "Astrelle", "Moonwake Ray", "Astralune",
 }
 
 local ForgottenList = {
     "Sea Eater", "Thunderzilla", "Iridesca", "Frostbite Leviathan", "Fluorivane",
-    "Cerulean Dragon", "Crystalline Behemoth", "Trench Warden", "Ragnarex",
+    "Cerulean Dragon", "Crystalline Behemoth", "Trench Warden", "Ragnarex", "Astralune",
 }
 
 local MutasiList = {
     "Noob", "Fairy Dust", "Holographic", "Gemstone", "Fire", "Color Burn",
-    "BloodMoon", "Binary", "Lightning", "Disco", "Festive", "Radioactive", "Moon Fragment", "Abyssal",
+    "BloodMoon", "Binary", "Lightning", "Disco", "Festive", "Radioactive", "Moon Fragment", "Abyssal", "Cosmic",
     -- FIX 6: Aurora & Midnight itu mutasi beneran (sama kayak Abyssal), makanya harus tetap ada di sini.
     -- Masalahnya BUKAN di list ini, tapi di cara deteksi prefix-nya -- lihat MutasiFalsePositiveSpecies di bawah.
     "Aurora", "Midnight",
@@ -138,30 +259,30 @@ local LegendaryCrystalList = {
 
 -- Ikan tier SECRET yang kena hitungan poin Galatama.
 local GalatamaFishPoints = {
-    ["Blob Shark"]        = 250,
-    ["Ghost Shark"]       = 500,
-    ["Skeleton Narwhal"]  = 600,
-    ["Worm Fish"]         = 3000,
-    ["Glacial Serpent"]   = 6000,
+    ["Astralune"]    = 20000,
+    ["Astrelle"]     = 6000,
+    ["Moonwake Ray"] = 5000,
 }
 
 -- Bonus mutasi buat ikan tier SECRET: FLAT, semua jenis mutasi dapet poin yang sama,
 -- KECUALI Big & Shiny (dua itu bukan mutasi beneran, cuma qualifier ukuran/visual).
-local GALATAMA_SECRET_MUTASI_BONUS = 600
+local GALATAMA_SECRET_MUTASI_BONUS = 1000
 
--- Ikan tier MYTHIC (tier baru, terpisah dari SecretFishList) + poin base-nya.
+-- Ikan tier MYTHIC (tier terpisah dari SecretFishList) + poin base-nya.
 local MythicList = {
-    "Manta Ray", "Hammerhead Shark", "Sharp One",
+    "Astronaut Manatee", "Astral Kelpie", "Solar Koi", "Lunar Koi", "Starbloom Manta",
 }
 
 local MythicFishPoints = {
-    ["Manta Ray"]        = 50,
-    ["Hammerhead Shark"] = 50,
-    ["Sharp One"]        = 50,
+    ["Astronaut Manatee"] = 50,
+    ["Astral Kelpie"]     = 50,
+    ["Solar Koi"]         = 100,
+    ["Lunar Koi"]         = 100,
+    ["Starbloom Manta"]   = 50,
 }
 
 -- Bonus mutasi buat ikan tier MYTHIC: FLAT juga, kecuali Big & Shiny.
-local GALATAMA_MYTHIC_MUTASI_BONUS = 200
+local GALATAMA_MYTHIC_MUTASI_BONUS = 250
 
 local FishChanceData = {
     ["Crystal Crab"]              = "1 in 750K",
@@ -253,6 +374,10 @@ local FishChanceData = {
     -- selalu nongol "Unknown" walau datanya ada, gara-gara lookup case-sensitive gak ketemu.
     ["Two-headed shark"]          = "1 in 3M",
     ["Ragnarex"]                  = "1 in 35M",
+    ["Colossal Shipwreck Crab"]   = "1 in 5M",
+    ["Astrelle"]                  = "1 in 6M",
+    ["Moonwake Ray"] = "1 in 5M",
+    ["Astralune"] = "1 in 20M",
 }
 
 local NP = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/"
@@ -333,7 +458,13 @@ local FishImageURL = {
     ["Caeruleum Razerback"]      = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/cureleam%20barbak%20(1).png",
     ["Two-headed shark"]         = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Two-headed%20shark.png",
     ["Ragnarex"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/104.png",
-    ["sc mariana new"]           = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/106.png",
+    ["Colossal Shipwreck Crab"]  = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/106.png",
+    -- NOTE: nama file "Astrlele.png" ini keliatan kayak typo (harusnya "Astrelle.png"?) --
+    -- cek lagi nama file yang beneran ke-upload di repo new-pisit-image, kalau salah nanti
+    -- gambarnya gak muncul kayak kasus Glacial Serpent kemarin.
+    ["Astrelle"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Astrlele.png",
+["Astralune"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/1000188338.png",
+["Moonwake Ray"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/1000188340.png",
 }
 
 -- Helper case-insensitive buat ambil URL gambar ikan. Ini nyegah kejadian kayak bug
@@ -491,7 +622,7 @@ local function FormatNumber(n)
     else return sign .. tostring(n) end
 end
 
--- Format angka poin Galatama dengan pemisah ribuan, contoh: 25000 -> "25,000 pts"
+-- Format angka poin Galatama dengan pemisah ribuan, contoh: 20000 -> "20,000 pts"
 local function FormatPoints(n)
     n = math.floor(n or 0)
     local sign = ""
@@ -1165,7 +1296,7 @@ local function SendGalatamaLeaderboard()
         avatar_url = WEBHOOK_AVATAR,
         embeds     = { BuildEmbed(
             "🏆 LEADERBOARD GALATAMA",
-            "```\n[SECRET] Blob Shark (250) | Ghost Shark (500) | Skeleton Narwhal (600) | Worm Fish (3,000) | Glacial Serpent (6,000)\nBonus Mutasi Secret: semua mutasi +600 (kecuali Big & Shiny)\n\n[MYTHIC] Manta Ray (50) | Hammerhead Shark (100) | Sharp One (105)\nBonus Mutasi Mythic: semua mutasi +200 (kecuali Big & Shiny)\n```",
+            "```\n[SECRET] Astralune (20,000) | Astrelle (6,000) | Moonwake Ray (5,000)\nBonus Mutasi Secret: semua mutasi +1,000 (kecuali Big & Shiny)\n\n[MYTHIC] Solar Koi (100) | Lunar Koi (100) | Astronaut Manatee (50) | Astral Kelpie (50) | Starbloom Manta (50)\nBonus Mutasi Mythic: semua mutasi +250 (kecuali Big & Shiny)\n```",
             16766720, fields, nil, nil, "BLOX Gank Galatama"
         )},
     })
@@ -1358,7 +1489,7 @@ local function CheckAndSend(rawMsg)
             { name = SEP .. " Berat",  value = "**" .. data.weight .. "**", inline = true },
             { name = SEP .. " Mutasi", value = mythicMutasiField,           inline = true },
         }
-        -- Bonus mutasi tier Mythic: FLAT 200 (kecuali Big/Shiny)
+        -- Bonus mutasi tier Mythic: FLAT 250 (kecuali Big/Shiny)
         ApplyGalatamaScoring(fields, uid, data.player, mythicBase, MythicFishPoints[mythicBase], mythicMutasi, GALATAMA_MYTHIC_MUTASI_BONUS)
         SendFishWebhook(EMOJI_MYTHIC .. " Mythic Tier Detected!", " " .. EMOJI_MYTHIC, TierColors.Mythic, fields, nil, imageUrl, GetMention(data.player), "secret")
         return
@@ -1384,12 +1515,11 @@ local function CheckAndSend(rawMsg)
             { name = SEP .. " Chance", value = chanceInfo,                   inline = true },
         }
 
-        -- Galatama point scoring (tier Secret) -- bonus mutasi FLAT 600 (kecuali Big/Shiny)
+        -- Galatama point scoring (tier Secret) -- bonus mutasi FLAT 1000 (kecuali Big/Shiny)
         local galBase = FindGalatamaFish(baseName)
         if galBase then
             ApplyGalatamaScoring(fields, uid, data.player, galBase, GalatamaFishPoints[galBase], mutasi, GALATAMA_SECRET_MUTASI_BONUS)
         end
-
         if isForgotten then
             SendFishWebhook(EMOJI_FORGOTTEN .. " Forgotten Tier Detected!", " " .. EMOJI_FORGOTTEN, TierColors.Forgotten, fields, nil, imageUrl, GetMention(data.player), "forgotten")
         else
