@@ -259,9 +259,9 @@ local LegendaryCrystalList = {
 
 -- Ikan tier SECRET yang kena hitungan poin Galatama.
 local GalatamaFishPoints = {
-    ["Astralune"]    = 20000,
-    ["Astrelle"]     = 6000,
-    ["Moonwake Ray"] = 5000,
+    ["Dark Megalodon"]       = 10000,
+    ["Elemental Tempestray"] = 1000,
+    ["Coral Reaper"]         = 6000,
 }
 
 -- Bonus mutasi buat ikan tier SECRET: FLAT, semua jenis mutasi dapet poin yang sama,
@@ -270,19 +270,16 @@ local GALATAMA_SECRET_MUTASI_BONUS = 1000
 
 -- Ikan tier MYTHIC (tier terpisah dari SecretFishList) + poin base-nya.
 local MythicList = {
-    "Astronaut Manatee", "Astral Kelpie", "Solar Koi", "Lunar Koi", "Starbloom Manta",
+    "Pailatee", "SPFin Shark",
 }
 
 local MythicFishPoints = {
-    ["Astronaut Manatee"] = 50,
-    ["Astral Kelpie"]     = 50,
-    ["Solar Koi"]         = 100,
-    ["Lunar Koi"]         = 100,
-    ["Starbloom Manta"]   = 50,
+    ["Pailatee"]    = 60,
+    ["SPFin Shark"] = 60,
 }
 
 -- Bonus mutasi buat ikan tier MYTHIC: FLAT juga, kecuali Big & Shiny.
-local GALATAMA_MYTHIC_MUTASI_BONUS = 250
+local GALATAMA_MYTHIC_MUTASI_BONUS = 100
 
 local FishChanceData = {
     ["Crystal Crab"]              = "1 in 750K",
@@ -1296,7 +1293,7 @@ local function SendGalatamaLeaderboard()
         avatar_url = WEBHOOK_AVATAR,
         embeds     = { BuildEmbed(
             "🏆 LEADERBOARD GALATAMA",
-            "```\n[SECRET] Astralune (20,000) | Astrelle (6,000) | Moonwake Ray (5,000)\nBonus Mutasi Secret: semua mutasi +1,000 (kecuali Big & Shiny)\n\n[MYTHIC] Solar Koi (100) | Lunar Koi (100) | Astronaut Manatee (50) | Astral Kelpie (50) | Starbloom Manta (50)\nBonus Mutasi Mythic: semua mutasi +250 (kecuali Big & Shiny)\n```",
+            "```\n[SECRET] Dark Megalodon (10,000) | Coral Reaper (6,000) | Elemental Tempestray (1,000)\nBonus Mutasi Secret: semua mutasi +1,000 (kecuali Big & Shiny)\n\n[MYTHIC] Pailatee (60) | SPFin Shark (60)\nBonus Mutasi Mythic: semua mutasi +100 (kecuali Big & Shiny)\n```",
             16766720, fields, nil, nil, "BLOX Gank Galatama"
         )},
     })
