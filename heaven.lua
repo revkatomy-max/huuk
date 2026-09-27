@@ -11,184 +11,63 @@ local TweenService       = game:GetService("TweenService")
 local Workspace          = game:GetService("Workspace")
 
 local WEBHOOK_URL         = ""
-local WEBHOOK_STATS       = "" -- NOTE: dipertahankan sebagai fallback URL buat "Check Player On Server"
-                                -- kalau WEBHOOK_CHECKPLAYER kosong. Embed rekap otomatis "Server Stats"
-                                -- yang dulu numpang di sini SUDAH DIHAPUS sesuai request.
 local WEBHOOK_FISH        = ""
 local WEBHOOK_EVENT       = ""
 local WEBHOOK_MUTASI      = ""
 local WEBHOOK_CHECKPLAYER = ""
+local WEBHOOK_BALANCER    = "" -- webhook khusus Elemental Balancer Tracking
 local WEBHOOK_GALATAMA    = "" -- webhook khusus leaderboard Galatama. Kosong = fallback ke WEBHOOK_FISH lalu WEBHOOK_URL.
 local WEBHOOK_AVATAR      = ""
 local PROXY               = "https://square-haze-a007.remediashop.workers.dev"
 local SCRIPT_ACTIVE       = false
-local EVENT_NOTIF_ENABLED = true -- toggle ON/OFF khusus notifikasi Event Hunt
+local EVENT_NOTIF_ENABLED = true -- toggle ON/OFF notifikasi Event Hunt
 
 local EVENT_COOLDOWN_SECONDS = 120
-local ROLE_NELAYAN_ID        = "1465243405591380023"
+local ROLE_NELAYAN_ID        = "1547792158994464809"
 
 local BRAND_NAME        = "BLOX GANK"
 local BRAND_ICON        = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/blox%20logo.png"
 local BRAND_FOOTER_TEXT = "BLOX GANK • Server Monitor"
 
 local TierColors = {
-    Secret    = 1752220,
-    Forgotten = 15263976,
+    Secret    = 16754127,
+    Forgotten = 16777215,
     Ruby      = 16753920,
     Legendary = 3407871,
-    Mythic    = 10181046,
-    Mutasi    = 16776960,
-    Join      = 65280,
+    Mutasi    = 14149373,
+    Join      = 10940871,
     Leave     = 16729344,
     NotBack   = 16711680,
+    AFK       = 16119078,
+    Mitos     = 16711680,
 }
 
-local EMOJI_NOTIF     = "<a:notif:1517730648545034390>"
-local EMOJI_SEPARATOR = "<a:arrow:1517730055323652106>"
-local EMOJI_STARTER   = "<a:mancing:1517730589091041433>"
-local EMOJI_FORGOTTEN = "<a:wiu:1517740584763265094>"
-local EMOJI_MUTASI    = "<a:mutasi:1517730565225447616>"
+local EMOJI_NOTIF     = "<a:alert:1549710084244766830>"
+local EMOJI_SEPARATOR = "<a:panah:1549711353390956564>"
+local EMOJI_STARTER   = "<a:monitor:1549713022199668767>"
+local EMOJI_FORGOTTEN = "<a:forgoten:1550326770064957531>"
+local EMOJI_MUTASI    = "<a:mut:1549980637396475914>"
 local EMOJI_RUBY       = "<a:ruby:1517740619794092153>"
 local EMOJI_LEGENDARY  = "<a:apiijo:1517778951223902239>"
-local EMOJI_TREASURE   = "<a:treasure:1517740647119847516>"
-local EMOJI_MEGALODON  = "<a:megablink:1517740677814030437>" -- masih dipakai di EventHuntData yang di-comment (Dark/Megalodon Hunt), jaga-jaga buat reaktivasi
+local EMOJI_TREASURE   = "<a:harta:1549712320916226218>"
+local EMOJI_MEGALODON  = "<a:megablink:1517740677814030437>"
 local EMOJI_THUNDER    = "<a:thunder:1517730620250390589>"
-local EMOJI_CRYSTAL    = "<a:ruby:1517740619794092153>" -- NOTE: sama persis dgn EMOJI_RUBY, cek lagi apakah emoji crystal-nya beneran ini
-local EMOJI_EVENTTAG   = "📢"
-local EMOJI_JOIN       = "<a:join:1517738095917924372>"
-local EMOJI_LEAVE      = "<a:leave:1517738147914711190>"
-local EMOJI_NOTBACK    = "<a:jam:1517740557445894194>"
-local EMOJI_CHECK      = "🔍"
-local EMOJI_LOCATION   = "📍"
-local EMOJI_MYTHIC     = "🔱" -- belum ada custom emoji Discord buat tier ini, pakai unicode dulu
+local EMOJI_THUNDER_TITLE = "⚡" -- Unicode plain, dipakai khusus di title/author embed
+                                  -- (custom emoji animated <a:...> nggak dirender Discord
+                                  -- di title/author name, cuma jalan di description/field)
+local EMOJI_CRYSTAL    = "<a:crystal:1549712227735703552>"
+local EMOJI_EVENTTAG   = "<:BloxylogoBOT:1550011261176258570>"
+local EMOJI_JOIN       = "<a:masuk:1549980666144227408>"
+local EMOJI_LEAVE      = "<a:pergi:1549980694204252271>"
+local EMOJI_NOTBACK    = "<a:turu:1549988686874026094>"
+local EMOJI_CHECK      = "<a:cari:1550011157006254110>"
+local EMOJI_LOCATION   = "<a:lokasi:1550327235708452884>"
+local EMOJI_AFK        = "<a:turu:1549988686874026094>"
+local EMOJI_BLIZZARD   = "<a:beku:1549980720418525296>"
+local EMOJI_STORM      = "<a:badai:1549980746473537658>"
+local EMOJI_VOLCANIC   = "<a:gunung:1549980777650065538>"
+local EMOJI_SILENTREACH = "🌊"
 local SEP = EMOJI_SEPARATOR
-
--- ============================================================
---  MEMBER LIST
--- ============================================================
-
-local MemberList = {
-    { username = "zupzupzuppasup",    display = "KEPALASPPGDKIJAKARTA", id = "766292778501275678" },
-    { username = "natadecxco",        display = "natarebus",            id = "638355599574171668" },
-    { username = "kdryvka",           display = "YIYA",                 id = "1312729486067761162" },
-    { username = "cjmin131",          display = "Karaadino",            id = "1506715872612585606" },
-    { username = "x_ibo21",           display = "wowo",                 id = "954296542406246400" },
-    { username = "evosudin",          display = "Bluuism",              id = "875656564931956766" },
-    { username = "minxing_kim",       display = "Minxing",              id = "484295718765461515" },
-    { username = "w4terhyacinth",     display = "waterrr",              id = "1309945598409048076" },
-    { username = "rexlepwz",          display = "Reeamore",             id = "1205780304753725492" },
-    { username = "dekadekadekk",      display = "dekadee",              id = "692735562817470494" },
-    { username = "ceriseciscake",     display = "ciscake",              id = "786950836034994216" },
-    { username = "mnikndy",           display = "prettyv",              id = "1478607686345035880" },
-    { username = "BEJOD06",           display = "MasW",                 id = "1222390041951600640" },
-    { username = "flucidious",        display = "fluc",                 id = "279691238494699530" },
-    { username = "nahaaa01",          display = "naffz",                id = "1392909983678595244" },
-    { username = "AcidReign07",       display = "kiixlau",              id = "1393120438594437161" },
-    { username = "minyaktalon9990",   display = "Revv2",                id = "870201488218157107" },
-    { username = "alleThetwin",       display = "LikeAvillain",         id = "870201488218157107" },
-    { username = "fzallzall",         display = "Ziell",                id = "462346945441038337" },
-    { username = "cecillionz1",       display = "ceceyy",               id = "1404117087303110877" },
-    { username = "zeylith162",        display = "vexara",               id = "1284490745515999282" },
-    { username = "theromantasy",      display = "star",                 id = "1461593359318650880" },
-    { username = "choalyn_2",         display = "Alyn_ikaa",            id = "1467390946357416060" },
-    { username = "Matchafav17",       display = "Macaaa",               id = "1478634976990859304" },
-    { username = "0_Aurorain",        display = "Aurorain",             id = "574581489912643603" },
-    { username = "cobadulumogaseru",  display = "lah",                  id = "1451975194397638676" },
-    { username = "fuxwing",           display = "hanna",                id = "1284490745515999282" },
-    { username = "renjunundip",       display = "aleale",               id = "1428266616763977811" },
-    { username = "iloafieus",         display = "mavis",                id = "1440589079086628998" },
-    { username = "i95jminn",          display = "azkara",               id = "1506715872612585606" },
-    { username = "trianayaa23",       display = "tiarkive",             id = "1425223281686085713" },
-    { username = "longisimusdorsii",  display = "strawberry",           id = "1506324307423526913" },
-    { username = "Thismeann",         display = "Oceann",               id = "1463858926394015838" },
-    { username = "hynad27",           display = "jisoo",                id = "1217043654909366323" },
-    { username = "Bintanggg_1111",    display = "niss",                 id = "574581489912643603" },
-    { username = "Baeforlife",        display = "Jaemin_choa",          id = "1467390946357416060" },
-    { username = "hawaish01",         display = "ilywaa",               id = "1392909983678595244" },
-    { username = "kathzeu",           display = "katzu",                id = "669806652375040022" },
-    { username = "tantecungkring",    display = "Lavvy",                id = "757111417919766648" },
-    { username = "prada2296",         display = "Prada",                id = "1461862687343378468" },
-    { username = "bluesjjong",        display = "raxye",                id = "1205780304753725492" },
-    { username = "Rambo_4200",        display = "RTBxRamboMYST",        id = "1472822553830621362" },
-    { username = "PumpPump369",       display = "PumpPump",             id = "602890650345537555" },
-    { username = "Rainoruby",         display = "rain",                 id = "1395401789561507952" },
-    { username = "Reinoruby",         display = "ujan",                 id = "1395401789561507952" },
-    { username = "Binxxx22",          display = "BinxPVNK77",           id = "952992106421579796" },
-    { username = "Lacherve",          display = "RaraPVNK77",           id = "952992106421579796" },
-    { username = "biruneptunus",      display = "BiruKC",               id = "962866204203167774" },
-    { username = "univastic",         display = "ciel",                 id = "1356280326548230274" },
-    { username = "Rambo_4209",        display = "SHOPEFOOD",            id = "1472822553830621362" },
-    { username = "ZatzaMMay",         display = "TuyulGomenarai",       id = "892353508160970773" },
-    { username = "WaifunyaGomenarai", display = "aci",                  id = "892353508160970773" },
-    { username = "furinyawn",         display = "cipii",                id = "1312729486067761162" },
-    { username = "bbackburney",       display = "neyyina",              id = "1443066200945852477" },
-    { username = "Leale716",          display = "Leaa",                 id = "1408658812424028182" },
-    { username = "aca_ri17",          display = "ricarica",             id = "1471486371377053768" },
-    { username = "keyrannn1",         display = "key",                  id = "1458430632370769972" },
-    { username = "cccaciaa",          display = "chacia",               id = "1427694245455859715" },
-    { username = "Ninym_22N",         display = "Chipii",               id = "688544588830343274" },
-    { username = "23Skuy2",           display = "BLAZE",                id = "786950836034994216" },
-    { username = "waynecalloipe",     display = "ubuungi",              id = "1407648190580133948" },
-    { username = "odegaard030",       display = "Kyye",                 id = "1427694245455859715" },
-    { username = "zielsalvatore",     display = "salva",                id = "1205780304753725492" },
-    { username = "Roikiee1",          display = "Roikiee1",             id = "1447227099206385745" },
-    { username = "Mhrshina",          display = "shina",                id = "1125668364489080933" },
-    { username = "we4thernnoon",      display = "weather",              id = "1125668364489080933" },
-    { username = "andokecheh",        display = "AS×ABMystique_1",      id = "1395401789561507952" },
-    { username = "zakeykim",          display = "moonkim",              id = "1391744350714855425" },
-    { username = "moonlqghts",        display = "moonkim",              id = "1391744350714855425" },
-    { username = "dipyyy",            display = "karyawandripy",        id = "454238781168418826" },
-    { username = "caribbeanight",     display = "holly",                id = "869841474332811274" },
-    { username = "luwepol",           display = "pakmala",              id = "757111417919766648" },
-    { username = "rykalys06",         display = "bebew06",              id = "1488495609961906247" },
-    { username = "thewtrmlnz",        display = "karinateary",          id = "1450346429867622480" },
-    { username = "pwetyyrlie",        display = "lalaloveu",            id = "1402311023918059520" },
-    { username = "Uwellll2",          display = "narumi",               id = "1395401789561507952" },
-    { username = "callmeflaviaa",     display = "Piaa",                 id = "757111417919766648" },
-    { username = "valalily",          display = "valalily",             id = "706512230627278908" },
-    { username = "princekudoo",       display = "shinichi",             id = "757609752149754027" },
-    { username = "pettrichoor",       display = "sugengspakbor",        id = "977807235906404422" },
-    { username = "nicika204",         display = "ikaa",                 id = "1414865637829906544" },
-    { username = "velorisee",         display = "velorisee",            id = "692735562817470494" },
-    { username = "userrxyz2",         display = "alaydf",               id = "1425223281686085713" },
-    { username = "worldofwis",        display = "FUNxWis",              id = "1185617757446873199" },
-    { username = "Ipungkerta7",       display = "Faruq83NXS",           id = "719154955943936090" },
-    { username = "Hyrooboy99",        display = "481HyrooSalvatore",    id = "1309945598409048076" },
-    { username = "ch0colveuuu",       display = "chocoo",               id = "1410918804036390995" },
-    { username = "Th3SwordIsReal",    display = "Yor",                  id = "370151022628175872" },
-    { username = "Blckwv3",           display = "Blackwave",            id = "494856245023604736" },
-    { username = "sheenaraa13",       display = "shennn",               id = "1427694245455859715" },
-    { username = "TalonGiveMeSecret86", display = "Ajudanipung01",      id = "719154955943936090" },
-    { username = "Gomenarai",         display = "Gomenarai",            id = "892353508160970773" },
-    { username = "ninindiy",          display = "cookiedy",             id = "1414865637829906544" },
-    { username = "OliverBMTH98",      display = "Olive",                id = "870201488218157107" },
-    { username = "cherryibloss0m",    display = "calaa",                id = "1408407306579869820" },
-    { username = "Avochildoo",        display = "Avo",                  id = "1203622473955024896" },
-    { username = "raisamaysha",       display = "raisa",                id = "638355599574171668" },
-    { username = "sotyaimoet00",      display = "rawr",                 id = "638355599574171668" },
-    { username = "archivistie",       display = "archie",               id = "1138846592800129057" },
-    { username = "ichinoese",         display = "adza",                 id = "1138846592800129057" },
-    { username = "loryn2509",         display = "oyiN",                 id = "1138846592800129057" },
-    { username = "xxxkidbloxian1",    display = "coco",                 id = "1138846592800129057" },
-    { username = "aumiora",           display = "acil",                 id = "1138846592800129057" },
-    { username = "dinolutsyu131",     display = "dinoyaaa",              id = "1398328850793889872" },
-    { username = "theagcd0",          display = "Shirohige",             id = "1401956495788085411" },
-    { username = "Kurohige241206",    display = "Kurohige",              id = "1401956495788085411" },
-    { username = "Klerra_Asu",        display = "Klerra_SYAIF",          id = "1171410071092215888" },
-    { username = "OomKlerra2",        display = "OomKlerra2",            id = "1171410071092215888" },
-    { username = "Aisyqu77",          display = "SPVxAizzz",             id = "924386459283230750" },
-    { username = "Sptdjars",          display = "Sptdjars",              id = "1447227099206385745" },
-    { username = "3to3meow",          display = "3to3meow",              id = "1428804537061212173" },
-    { username = "shinarugi",         display = "gie",             id = "748417496020942869" },
-    { username = "sintiadche",        display = "sintiadche",            id = "1428804537061212173" },
-    { username = "panjulll63",        display = "OSCARxBojonggede",      id = "1382874484448694312" },
-    { username = "amerissano",        display = "amerissano",            id = "1420931573905100920" },
-    { username = "Alyn_ikaa",         display = "Choalyn_2",             id = "1467390946357416060" },
-    { username = "Rainzy214",         display = "Rigell",                id = "1428750848724566149" },
-    { username = "bodrexin1904", display = "codotparker",                id = "1462151652688662549" },
-    { username = "Cameron_G85", display = "ayess",                       id = "1451548051255726303" },
-    { username = "adniida", display = "piskyy",                          id = "1396834655889653790" },
-}
 
 -- ============================================================
 --  DATABASE
@@ -215,42 +94,35 @@ local SecretFishList = {
     "Frostmoon Whale", "Crystal Goliath", "Eggy Enchant Stone", "Dark Megalodon",
     "Elemental Tempestray", "Glacial Serpent", "Caustic Maw", "Coral Reaper",
     "Sunken Hadalith", "Trench Warden", "Caeruleum Razerback", "Two-headed shark", "Ragnarex",
-    "Colossal Shipwreck Crab", "Astrelle", "Moonwake Ray", "Astralune",
+    "Colossal Shipwreck Crab", "Astrelle", "Moonwake Ray", "Astralune", "Starglass Guardian", "Pelagon", "Crimson Dreadtusk", "Riftborn Arowana",
+    "Pyrocoil", "Stormshell Brute", "Wintertusk Mammofin", "Elemental Hydra", "Overlord Hydra", "Tribunal Withering core", "Ashen Kingfish", "Everbloom", "Mr Money Bags", "Velobyte", "Cenobyte.EXE", "Shellshock X",
 }
 
 local ForgottenList = {
     "Sea Eater", "Thunderzilla", "Iridesca", "Frostbite Leviathan", "Fluorivane",
-    "Cerulean Dragon", "Crystalline Behemoth", "Trench Warden", "Ragnarex", "Astralune",
+    "Cerulean Dragon", "Crystalline Behemoth", "Trench Warden", "Ragnarex", "Astralune", "Crimson Dreadtusk", "Elemental Hydra", "Overlord Hydra", "Everbloom","Cenobyte.EXE",
 }
 
 local MutasiList = {
     "Noob", "Fairy Dust", "Holographic", "Gemstone", "Fire", "Color Burn",
-    "BloodMoon", "Binary", "Lightning", "Disco", "Festive", "Radioactive", "Moon Fragment", "Abyssal", "Cosmic",
-    -- FIX 6: Aurora & Midnight itu mutasi beneran (sama kayak Abyssal), makanya harus tetap ada di sini.
-    -- Masalahnya BUKAN di list ini, tapi di cara deteksi prefix-nya -- lihat MutasiFalsePositiveSpecies di bawah.
-    "Aurora", "Midnight",
-    -- TODO: kalo mau nambahin "Albino" tinggal masukin string-nya di sini, contoh: "Albino",
+    "BloodMoon", "Binary", "Lightning", "Disco", "Festive", "Radioactive", "Moon Fragment", "Abyssal", "Cosmic", "Equinox", "Glitch",
+    "Elemental", "Solar", "1x1x1", "Artic frost", "8-Bit",
 }
 
--- FIX 6: nama SPESIES ikan yang kebetulan diawali kata yang sama kayak nama mutasi beneran
--- (Abyssal Maw Angler, Aurora Grouper, dst). Bedanya sama FIX 4 lama: dulu whitelist ini
--- dicek pakai EXACT match ke seluruh nama ikan, jadi gagal kalau ada kata tambahan di depan
--- (contoh "STONE Aurora Manatee", "Big Aurora Narwhal" -- ada prefix mutasi/qualifier beneran
--- di depan nama spesiesnya). Sekarang FindMutasi akan MEMBUANG dulu substring nama spesies ini
--- dari teks sebelum nyari kata mutasi, jadi sisa "STONE"/"Big" itu yang dicek ke MutasiList,
--- bukan kata "Aurora"/"Abyssal"/"Midnight" yang nempel di nama spesiesnya sendiri.
+-- whitelist nama spesies yang ke-false-positive kedetect sebagai mutasi (dibuang dulu sebelum scan mutasi)
 local MutasiFalsePositiveSpecies = {
     "abyssal maw angler",
-    "aurora grouper",
-    "aurora starfish",
-    "aurora narwhal",
-    "aurora manatee",
-    "aurora buterfly fish",
-    "midnight star squid",
 }
 
 local LegendaryCrystalList = {
     "Blue Sea Dragon", "Star Snail", "Cute Dumbo", "Blossom Jelly", "Bioluminescent Octopus",
+}
+
+-- ============================================================
+--  MYTHIC TIER (embed merah polos)
+-- ============================================================
+local MythicFishList = {
+    "Shiny Hammerhead Shark",
 }
 
 -- ============================================================
@@ -259,27 +131,32 @@ local LegendaryCrystalList = {
 
 -- Ikan tier SECRET yang kena hitungan poin Galatama.
 local GalatamaFishPoints = {
-    ["Dark Megalodon"]       = 10000,
-    ["Elemental Tempestray"] = 1000,
-    ["Coral Reaper"]         = 6000,
+    ["Velobyte"]       = 5000,
+    ["Shellshock X"]   = 3000,
+    ["Cenobyte.EXE"]   = 30000,
 }
 
 -- Bonus mutasi buat ikan tier SECRET: FLAT, semua jenis mutasi dapet poin yang sama,
 -- KECUALI Big & Shiny (dua itu bukan mutasi beneran, cuma qualifier ukuran/visual).
 local GALATAMA_SECRET_MUTASI_BONUS = 1000
 
--- Ikan tier MYTHIC (tier terpisah dari SecretFishList) + poin base-nya.
-local MythicList = {
-    "Pailatee", "SPFin Shark",
+-- Ikan tier MYTHIC khusus Galatama (terpisah dari MythicFishList di atas, yang itu
+-- cuma buat embed merah polos "Shiny Hammerhead Shark") + poin base-nya.
+local GalatamaMythicList = {
+    "Toytech angler", "F-15H", "Mediclaw", "Circuit Shark", "Whaleware", "AX-0TL",
 }
 
-local MythicFishPoints = {
-    ["Pailatee"]    = 60,
-    ["SPFin Shark"] = 60,
+local GalatamaMythicFishPoints = {
+    ["Toytech angler"]    = 100,
+    ["F-15H"]             = 100,
+    ["Mediclaw"]          = 100,
+    ["Circuit Shark"]     = 100,
+    ["Whaleware"]         = 100,
+    ["AX-0TL"]            = 100,
 }
 
--- Bonus mutasi buat ikan tier MYTHIC: FLAT juga, kecuali Big & Shiny.
-local GALATAMA_MYTHIC_MUTASI_BONUS = 100
+-- Bonus mutasi buat ikan tier MYTHIC Galatama: FLAT juga, kecuali Big & Shiny.
+local GALATAMA_MYTHIC_MUTASI_BONUS = 50
 
 local FishChanceData = {
     ["Crystal Crab"]              = "1 in 750K",
@@ -345,7 +222,7 @@ local FishChanceData = {
     ["Blocky Lochness Monster"]   = "1 in 3M",
     ["Frostbite Leviathan"]       = "1 in 12M",
     ["Aurelion"]                  = "1 in 3M",
-    ["Runic Enchant Stone"]       = "1 in 1.5M",
+    ["Runic Enchant Stone"]       = "1 in 700k",
     ["Frogalloon"]                = "1 in 1.5M",
     ["Fluorivane"]                = "1 in 15M",
     ["Coral Whale"]               = "1 in 2M",
@@ -366,107 +243,133 @@ local FishChanceData = {
     ["Sunken Hadalith"]           = "1 in ??",
     ["Trench Warden"]             = "1 in 15M",
     ["Caeruleum Razerback"]       = "1 in 3M",
-    -- FIX (rapihkan): key ini sebelumnya "two-headed shark" (t kecil), padahal SecretFishList
-    -- & FishImageURL pakai "Two-headed shark" (T besar) -- akibatnya field Chance di embed
-    -- selalu nongol "Unknown" walau datanya ada, gara-gara lookup case-sensitive gak ketemu.
     ["Two-headed shark"]          = "1 in 3M",
     ["Ragnarex"]                  = "1 in 35M",
     ["Colossal Shipwreck Crab"]   = "1 in 5M",
     ["Astrelle"]                  = "1 in 6M",
     ["Moonwake Ray"] = "1 in 5M",
     ["Astralune"] = "1 in 20M",
+    ["Starglass Guardian"] = "1 in 3M",
+    ["Pelagon"] = "1 in 4.5M",
+    ["Riftborn Arowana"] = "1 in 4.5M",
+    ["Pyrocoil"] = "1 in 4M",
+    ["Stormshell Brute"] = "1 in 4M",
+    ["Wintertusk Mammofin"] = "1 in 4M",
+    ["Crimson Dreadtusk"] ="1 in 20M",
+    ["Elemental Hydra"] = "1 in 40M",
+    ["Overlord Hydra"] = "1 in 45M",
+    ["Ashen Kingfish"] = "1 in 3.5M",
+    ["Everbloom"] = "1 in 20M",
+    ["Mr Money Bags"] = "1 in 4M",
+    ["Tribunal Withering Core"] = "1 in 5M",
+    ["Velobyte"] = "1 in 5M",
+    ["Shellshock X"] = "1 in 3M",
+    ["Cenobyte.EXE"] = "1 in 30M",
+
 }
 
 local NP = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/"
 
 local FishImageURL = {
-    ["Frostborn Shark"]          = NP .. "9.png",
-    ["Crystal Goliath"]          = NP .. "11.png",
-    ["Crystalline Behemoth"]     = NP .. "10.png",
-    ["Elemental Tempestray"]     = NP .. "13.png",
-    ["Dark Megalodon"]           = NP .. "14.png",
-    ["Withering Core"]           = NP .. "16.png",
-    ["Flame Tyrant"]             = NP .. "17.png",
-    ["Scorching Veinmaw"]        = NP .. "18.png",
-    ["Cerulean Dragon"]          = NP .. "19.png",
-    ["King Crab"]                = NP .. "21.png",
-    ["Queen Crab"]               = NP .. "22.png",
-    ["Panther Eel"]              = NP .. "23.png",
-    ["Cryoshade Glider"]         = NP .. "24.png",
-    ["Giant Squid"]              = NP .. "25.png",
-    ["Depthseeker Ray"]          = NP .. "26.png",
-    ["Robot Kraken"]             = NP .. "27.png",
-    ["Ghost Shark"]              = NP .. "29.png",
-    ["Skeleton Narwhal"]         = NP .. "30.png",
-    ["Blob Shark"]               = NP .. "31.png",
-    ["Worm Fish"]                = NP .. "32.png",
-    ["Cosmic Mutant Shark"]      = NP .. "33.png",
-    ["Megalodon"]                = NP .. "34.png",
-    ["Bloodmoon Whale"]          = NP .. "36.png",
-    ["Frostmoon Whale"]          = NP .. "37.png",
-    ["Thunderzilla"]             = NP .. "38.png",
-    ["Thin Armor Shark"]         = NP .. "40.png",
-    ["Scare"]                    = NP .. "41.png",
-    ["Lochness Monster"]         = NP .. "43.png",
-    ["Ancient Magma Whale"]      = NP .. "44.png",
-    ["Crystal Crab"]             = NP .. "46.png",
-    ["Orca"]                     = NP .. "47.png",
-    ["Eerie Shark"]              = NP .. "49.png",
-    ["Monster Shark"]            = NP .. "50.png",
-    ["Eggy Enchant Stone"]       = NP .. "52.png",
-    ["Strawberry Orca"]          = NP .. "53.png",
-    ["Iridesca"]                 = NP .. "54.png",
-    ["Frogalloon"]               = NP .. "56.png",
-    ["Blocky Lochness Monster"]  = NP .. "57.png",
-    ["Aurelion"]                 = NP .. "58.png",
-    ["Frostbite Leviathan"]      = NP .. "59.png",
-    ["Runic Enchant Stone"]      = NP .. "61.png",
-    ["Bonemaw Tyrant"]           = NP .. "00.png",
-    ["Mutant Runic Koi"]         = NP .. "62.png",
-    ["Deepsea Monster Axolotl"]  = NP .. "63.png",
-    ["Fluorivane"]               = NP .. "64.png",
-    ["Sea Eater"]                = NP .. "65.png",
-    ["Pirate Megalodon"]         = NP .. "67.png",
-    ["Elpirate Gran Maja"]       = NP .. "68.png",
-    ["Cursed Kraken"]            = NP .. "69.png",
-    ["Mosasaur Shark"]           = NP .. "71.png",
-    ["King Jelly"]               = NP .. "72.png",
-    ["Gladiator Shark"]          = NP .. "75.png",
-    ["Ancient Lochness Monster"] = NP .. "76.png",
-    ["Elshark Gran Maja"]        = NP .. "77.png",
-    ["Viridis Lurker"]           = NP .. "78.png",
-    ["Bone Whale"]               = NP .. "79.png",
-    ["Ancient Whale"]            = NP .. "80.png",
-    ["Great Whale"]              = NP .. "82.png",
-    ["Coral Whale"]              = NP .. "83.png",
-    ["Love Nessie"]              = NP .. "85.png",
-    ["Broken Heart Nessie"]      = NP .. "86.png",
-    ["Leviathan"]                = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Leviathan.png",
+    ["Frostborn Shark"]          = NP .. "bg_frostborn.png",
+    ["Crystal Goliath"]          = NP .. "bg_crystalgoliath.png",
+    ["Crystalline Behemoth"]     = NP .. "bg_crystalline.png",
+    ["Elemental Tempestray"]     = NP .. "bg_elementaltempest.png",
+    ["Dark Megalodon"]           = NP .. "bg_darkmega.png",
+    ["Withering Core"]           = NP .. "bg_witheringcore.png",
+    ["Flame Tyrant"]             = NP .. "bg_flametyrant.png",
+    ["Scorching Veinmaw"]        = NP .. "bg_scorchingvein.png",
+    ["Cerulean Dragon"]          = NP .. "bg_ceruleandragon.png",
+    ["King Crab"]                = NP .. "bg_kingcrab.png",
+    ["Queen Crab"]               = NP .. "bg_queencrab.png",
+    ["Panther Eel"]              = NP .. "bg_panthereel.png",
+    ["Cryoshade Glider"]         = NP .. "bg_cryoshade.png",
+    ["Giant Squid"]              = NP .. "bg_giantsquid.png",
+    ["Depthseeker Ray"]          = NP .. "bg_depthseeker.png",
+    ["Robot Kraken"]             = NP .. "bg_robotkraken.png",
+    ["Ghost Shark"]              = NP .. "bg_ghostshark.png",
+    ["Skeleton Narwhal"]         = NP .. "bg_skeletonnarwhal.png",
+    ["Blob Shark"]               = NP .. "bg_blobshark.png",
+    ["Worm Fish"]                = NP .. "bg_wormfish.png",
+    ["Cosmic Mutant Shark"]      = NP .. "bg_cosmicmutant.png",
+    ["Megalodon"]                = NP .. "bg_megalodon.png",
+    ["Bloodmoon Whale"]          = NP .. "bg_bloodmoonwhale.png",
+    ["Frostmoon Whale"]          = NP .. "bg_frostmoonwhale.png",
+    ["Thunderzilla"]             = NP .. "bg_thunderzilla.png",
+    ["Thin Armor Shark"]         = NP .. "bg_thinarmor.png",
+    ["Scare"]                    = NP .. "bg_scare.png",
+    ["Lochness Monster"]         = NP .. "bg_lochness.png",
+    ["Ancient Magma Whale"]      = NP .. "bg_ancientmagma.png",
+    ["Crystal Crab"]             = NP .. "bg_crystalcrab.png",
+    ["Orca"]                     = NP .. "bg_orca.png",
+    ["Eerie Shark"]              = NP .. "bg_eerieshark.png",
+    ["Monster Shark"]            = NP .. "bg_monstershark.png",
+    ["Eggy Enchant Stone"]       = NP .. "bg_eggy.png",
+    ["Strawberry Orca"]          = NP .. "bg_strawberryorca.png",
+    ["Iridesca"]                 = NP .. "bg_iridesca.png",
+    ["Frogalloon"]               = NP .. "bg_frogalloon.png",
+    ["Blocky Lochness Monster"]  = NP .. "bg_blockyloch.png",
+    ["Aurelion"]                 = NP .. "bg_aurelion.png",
+    ["Frostbite Leviathan"]      = NP .. "bg_frostbite.png",
+    ["Runic Enchant Stone"]      = NP .. "bg_runicstone.png",
+    ["Bonemaw Tyrant"]           = NP .. "bg_bonemaw.png",
+    ["Mutant Runic Koi"]         = NP .. "bg_mutantkoi.png",
+    ["Deepsea Monster Axolotl"]  = NP .. "bg_deepseaaxolotl.png",
+    ["Fluorivane"]               = NP .. "bg_fluorivane.png",
+    ["Sea Eater"]                = NP .. "bg_seaeater.png",
+    ["Pirate Megalodon"]         = NP .. "bg_piratemega.png",
+    ["Elpirate Gran Maja"]       = NP .. "bg_elpirate.png",
+    ["Cursed Kraken"]            = NP .. "bg_cursedkraken.png",
+    ["Mosasaur Shark"]           = NP .. "bg_mosasaur.png",
+    ["King Jelly"]               = NP .. "bg_kingjelly.png",
+    ["Gladiator Shark"]          = NP .. "bg_gladiator.png",
+    ["Ancient Lochness Monster"] = NP .. "bg_ancientloch.png",
+    ["Elshark Gran Maja"]        = NP .. "bg_elshark.png",
+    ["Viridis Lurker"]           = NP .. "bg_viridis.png",
+    ["Bone Whale"]               = NP .. "bg_bonewhale.png",
+    ["Ancient Whale"]            = NP .. "bg_ancientwhale.png",
+    ["Great Whale"]              = NP .. "bg_greatwhale.png",
+    ["Coral Whale"]              = NP .. "bg_coralwhale.png",
+    ["Love Nessie"]              = NP .. "bg_lovenessie.png",
+    ["Broken Heart Nessie"]      = NP .. "bg_brokenheartnessie.png",
+    ["Leviathan"]                = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/semangat%20kt%20w%20teh.png",
     ["Rainbow Comet Shark"]      = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Rainbow%20Comet%20Shark.png",
     ["Ruby Gemstone"]            = "https://raw.githubusercontent.com/revkatomy-max/pisit-image/main/1.png",
-    ["Glacial Serpent"]          = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/81.png",
+    ["Glacial Serpent"]          = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_glacial.png",
     ["Machodon"]                 = "https://raw.githubusercontent.com/revkatomy-max/pisit-image/main/42.png",
-    ["Crystal"]                  = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/crystal.png",
-    ["treasure hunt"]            = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/treasure.png",
-    ["Caustic Maw"]              = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/97.png",
-    ["Aurora"]                   = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/99.png",
-    ["Coral Reaper"]             = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Coral%20Reaper.png",
-    ["Trench Warden"]            = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Trench%20Warden.png",
-    ["Caeruleum Razerback"]      = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/cureleam%20barbak%20(1).png",
-    ["Two-headed shark"]         = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Two-headed%20shark.png",
-    ["Ragnarex"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/104.png",
-    ["Colossal Shipwreck Crab"]  = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/106.png",
-    -- NOTE: nama file "Astrlele.png" ini keliatan kayak typo (harusnya "Astrelle.png"?) --
-    -- cek lagi nama file yang beneran ke-upload di repo new-pisit-image, kalau salah nanti
-    -- gambarnya gak muncul kayak kasus Glacial Serpent kemarin.
-    ["Astrelle"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Astrlele.png",
-["Astralune"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/1000188338.png",
-["Moonwake Ray"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/1000188340.png",
+    ["Crystal"]                  = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_crystal.png",
+    ["treasure hunt"]            = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_treasure.png",
+    ["Caustic Maw"]              = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_causticmaw.png",
+    ["Aurora"]                   = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_aurora.png",
+    ["Coral Reaper"]             = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_coralreaper.png",
+    ["Trench Warden"]            = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_trenchwarden.png",
+    ["Ketupat Whale"]            = "https://raw.githubusercontent.com/revkatomy-max/asset-id/main/Ketupat%20Whale.png",
+    ["Caeruleum Razerback"]      = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_caeruleum.png",
+    ["Two-headed shark"]         = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_twoheaded.png",
+    ["Ragnarex"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_ragnarex.png",
+    ["Colossal Shipwreck Crab"]  = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_colshipcrab.png",
+    ["Astrelle"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_astrelle.png",
+["Astralune"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_astralune.png",
+["Moonwake Ray"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_moonwake.png",
+["Pelagon"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_pelagon.png",
+["Starglass Guardian"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_starglass.png",
+["Riftborn Arowana"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_riftborn.png",
+["Pyrocoil"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_pyrocoil.png",
+["Stormshell Brute"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_stormshell.png",
+["Wintertusk Mammofin"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_wintertusk.png",
+["Crimson Dreadtusk"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_crimsondread.png",
+["Elemental Hydra"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_overlordhydra.png",
+["Tribunal Withering core"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_tribunal.png",
+["Ashen Kingfish"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_ashenkingfish.webp",
+["Everbloom"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_everbloom.webp",
+["Mr Money Bags"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_mrmoneybags.webp",
+["Overlord Hydra"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_elementalhydra.png",
+["Velobyte"]       = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_velobyte.png",
+["Cenobyte.EXE"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_cenobyte.png",
+["Shellshock X"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_shellshockx.png",
+    
 }
 
--- Helper case-insensitive buat ambil URL gambar ikan. Ini nyegah kejadian kayak bug
--- "two-headed shark" -- kalau ada typo beda huruf besar/kecil antara SecretFishList/
--- ForgottenList/dll dengan key di FishImageURL, gambar tetap ketemu selama nama dasarnya sama.
 local FishImageURLLower = {}
 for k, v in pairs(FishImageURL) do
     FishImageURLLower[string.lower(k)] = v
@@ -478,11 +381,7 @@ local function GetFishImageURL(baseName)
 end
 
 -- ============================================================
---  EVENT HUNT DATABASE
---  Megalodon Hunt, Dark Megalodon Hunt, dan Aurora Borealis DINONAKTIFKAN
---  sesuai request. Sekarang tinggal Treasure Hunt dan Thunderzilla Hunt
---  aja yang bakal kirim notif event. Entry lama dibiarin ke-comment
---  biar gampang diaktifin lagi kalau perlu.
+--  EVENT HUNT DATABASE (aktif: Treasure Hunt, Thunderzilla, Crystal, Blizzard, Storm, Volcanic)
 -- ============================================================
 
 local EventHuntData = {
@@ -494,29 +393,9 @@ local EventHuntData = {
         emoji        = "💰",
         thumbUrl     = FishImageURL["treasure hunt"],
     },
-    --[[ dinonaktifkan -- Dark Megalodon Hunt
-    {
-        textTriggers = { "dark megalodon hunt", "dark megalodon" },
-        title        = "🌑 Dark Megalodon Hunt Dimulai!",
-        description  = "Dark Mega guys " .. EMOJI_MEGALODON,
-        color        = 2303786,
-        emoji        = "🌑",
-        thumbUrl     = FishImageURL["Dark Megalodon"],
-    },
-    ]]
-    --[[ dinonaktifkan -- Megalodon Hunt
-    {
-        textTriggers = { "megalodon hunt" },
-        title        = EMOJI_MEGALODON .. " Megalodon Hunt Dimulai!",
-        description  = "Mega gusy 🎣",
-        color        = 3447003,
-        emoji        = "🦈",
-        thumbUrl     = FishImageURL["Megalodon"],
-    },
-    ]]
     {
         textTriggers = { "thunderzilla hunt", "thunderzilla" },
-        title        = EMOJI_THUNDER .. " Thunderzilla Hunt Dimulai!",
+        title        = EMOJI_THUNDER_TITLE .. " Thunderzilla Hunt Dimulai!",
         description  = "zilla oi " .. EMOJI_THUNDER,
         color        = 16776960,
         emoji        = "⚡",
@@ -530,16 +409,38 @@ local EventHuntData = {
         emoji        = "💎",
         thumbUrl     = FishImageURL["Crystal"],
     },
-    --[[ dinonaktifkan -- Aurora Borealis
     {
-        textTriggers = { "aurora borealis", "aurora event" },
-        title        = "💫 Aurora Borealis!",
-        description  = "cantiknyooo",
-        color        = 9055202,
-        emoji        = "💫",
-        thumbUrl     = FishImageURL["Aurora"],
+        textTriggers = { "a blizzard has started", "blizzard has started", "blizzard" },
+        title        = EMOJI_BLIZZARD .. " Blizzard Dimulai!",
+        description  = "Cuaca beku, siap-siap gas " .. EMOJI_BLIZZARD,
+        color        = 10730212,
+        emoji        = "❄️",
+        thumbUrl     = FishImageURL["Wintertusk Mammofin"],
     },
-    ]]
+    {
+        textTriggers = { "storm elemental event event has started", "storm elemental event has started", "a massive storm is occurring!", "a massive storm is occurring" },
+        title        = EMOJI_STORM .. " Storm Dimulai!",
+        description  = "Badai mulai, hati-hati mancing " .. EMOJI_STORM,
+        color        = 6579300,
+        emoji        = "🌪️",
+        thumbUrl     = FishImageURL["Stormshell Brute"],
+    },
+    {
+        textTriggers = { "volcano elemental event has started", "volcano elemental event", "a volcano has erupted", "volcanic" },
+        title        = EMOJI_VOLCANIC .. " Volcanic Dimulai!",
+        description  = "Gunung berapi aktif, gas sikat " .. EMOJI_VOLCANIC,
+        color        = 14898213,
+        emoji        = "🌋",
+        thumbUrl     = FishImageURL["Pyrocoil"],
+    },
+    {
+        textTriggers = { "kraken defeat event has started", "kraken defeat event", "kraken defeat" },
+        title        = "🦑 Kraken Defeat Event Dimulai!",
+        description  = "Boost luck aktif + mutasi **8-Bit** bisa muncul! Gas sikat sekarang 🦑",
+        color        = 3066993,
+        emoji        = "🦑",
+        thumbUrl     = BRAND_ICON,
+    },
 }
 
 local EventCooldown = {}
@@ -548,14 +449,20 @@ local EventCooldown = {}
 --  STATE / CACHE
 -- ============================================================
 
-local MentionCache    = {}
 local FishImageCache  = {}
 local AvatarCache     = {}
 local LeaveTimers     = {}
 local PlayerStats     = {}
 local GalatamaStats   = {} -- [userId] = { name = ..., totalPoints = 0, catches = { [fishBaseName] = { count, totalPoints } } }
 local PlayerNameToId  = {}
-local SpawnPointCache = {} -- {name, position} hasil scan folder "!!! SPAWN LOCATIONS"
+local SpawnPointCache = {}
+
+-- ============================================================
+--  AFK / IDLE DETECTION
+-- ============================================================
+
+local AFK_THRESHOLD_SECONDS  = 3600
+local AFK_CHECK_INTERVAL     = 60
 
 -- ============================================================
 --  SAVE CONFIG
@@ -563,16 +470,16 @@ local SpawnPointCache = {} -- {name, position} hasil scan folder "!!! SPAWN LOCA
 
 local CONFIG_FILE = "bloxgank_config.json"
 
-local function SaveConfig(joinUrl, fishUrl, statsUrl, eventUrl, mutasiUrl, checkplayerUrl, galatamaUrl)
+local function SaveConfig(joinUrl, fishUrl, eventUrl, mutasiUrl, checkplayerUrl, balancerUrl, galatamaUrl)
     if not writefile then return end
     pcall(function()
         writefile(CONFIG_FILE, HttpService:JSONEncode({
             webhook_join        = joinUrl        or "",
             webhook_fish        = fishUrl        or "",
-            webhook_stats       = statsUrl       or "",
             webhook_event       = eventUrl       or "",
             webhook_mutasi      = mutasiUrl      or "",
             webhook_checkplayer = checkplayerUrl or "",
+            webhook_balancer    = balancerUrl    or "",
             webhook_galatama    = galatamaUrl    or "",
         }))
     end)
@@ -607,7 +514,6 @@ local function Trim(s)
     return s:match("^%s*(.-)%s*$") or s
 end
 
--- Format angka besar jadi singkatan K/M/B (mis. 4500000 -> "4.5M"), buat embed Check Player
 local function FormatNumber(n)
     n = tonumber(n)
     if not n then return "N/A" end
@@ -646,34 +552,6 @@ local function FindPlayer(name)
 end
 
 -- ============================================================
---  MENTION HELPERS
--- ============================================================
-
-local function BuildMentionCache(rbxName, rbxDisplay)
-    for _, member in ipairs(MemberList) do
-        local uLower = string.lower(member.username)
-        local dLower = string.lower(member.display)
-        if string.lower(rbxName) == uLower    or string.lower(rbxDisplay) == dLower
-        or string.lower(rbxName) == dLower    or string.lower(rbxDisplay) == uLower then
-            MentionCache[string.lower(rbxName)]    = member.id
-            MentionCache[string.lower(rbxDisplay)] = member.id
-        end
-    end
-end
-
-local function GetMention(robloxName)
-    if not robloxName then return "" end
-    local lower = string.lower(robloxName)
-    if MentionCache[lower] then return "<@" .. MentionCache[lower] .. ">" end
-    for _, member in ipairs(MemberList) do
-        if string.lower(member.username) == lower or string.lower(member.display) == lower then
-            return "<@" .. member.id .. ">"
-        end
-    end
-    return ""
-end
-
--- ============================================================
 --  FISH DETECTION
 -- ============================================================
 
@@ -684,14 +562,31 @@ local function FindSecretFish(fishName)
     end
     local bestBase, bestLen, bestMutasi = nil, 0, nil
     for _, baseName in ipairs(SecretFishList) do
-        local s = string.find(lower, string.lower(baseName), 1, true)
+        local baseLower = string.lower(baseName)
+        local s = string.find(lower, baseLower, 1, true)
         if s then
-            local mutasi = nil
-            if s > 1 then
-                mutasi = fishName:sub(1, s - 1):match("^%s*(.-)%s*$")
-                if mutasi == "" then mutasi = nil end
+            local afterPos = s + #baseName
+            local suffix   = string.match(fishName:sub(afterPos), "^%s*(.-)%s*$") or ""
+            local validMatch = true
+            if suffix ~= "" then
+                local suffixLower = string.lower(suffix)
+                local isMutasi = false
+                for _, mutasiName in ipairs(MutasiList) do
+                    if string.lower(mutasiName) == suffixLower then
+                        isMutasi = true
+                        break
+                    end
+                end
+                if not isMutasi then
+                    validMatch = false
+                end
             end
-            if #baseName > bestLen then
+            if validMatch and #baseName > bestLen then
+                local mutasi = nil
+                if s > 1 then
+                    mutasi = fishName:sub(1, s - 1):match("^%s*(.-)%s*$")
+                    if mutasi == "" then mutasi = nil end
+                end
                 bestLen    = #baseName
                 bestBase   = baseName
                 bestMutasi = mutasi
@@ -701,16 +596,9 @@ local function FindSecretFish(fishName)
     return bestBase, bestMutasi
 end
 
--- FIX 3: FindMutasi sebelumnya gagal detect kalau nama mutasi ada di UJUNG string
--- (contoh fish name "Dead Zombie Shark Frozen" -> "Frozen" di ujung, afterPos jadi
--- string kosong sehingga "afterOk" dulu selalu false). Sekarang end-of-string dihitung valid juga.
 local function FindMutasi(fishName)
     local lower = string.lower(fishName)
 
-    -- FIX 6: buang dulu substring nama SPESIES (bukan exact match seluruh nama ikan lagi),
-    -- supaya kata mutasi asli (Abyssal/Aurora/Midnight) yang nempel di nama spesies gak
-    -- ketauan sebagai mutasi, TAPI kata di depan/belakangnya (mutasi beneran, mis. "Stone",
-    -- "Fire", dst -- kalau ada) tetap bisa kedetect karena sisa teksnya tetap dicek di bawah.
     for _, species in ipairs(MutasiFalsePositiveSpecies) do
         local s = string.find(lower, species, 1, true)
         if s then
@@ -755,10 +643,46 @@ local function FindLegendaryCrystal(fishName)
     return nil
 end
 
--- Cari bonus mutasi FLAT (dipakai buat Secret & Mythic, tinggal beda angka flatAmount-nya).
--- Mutasi dicek per-kata: kalau ADA minimal 1 kata yang bukan "big"/"shiny", berarti ada
--- mutasi beneran -> dapet flatAmount. Kalau mutasi kosong, atau isinya cuma "Big"/"Shiny"
--- doang (tanpa mutasi beneran), bonusnya 0.
+local function FindMythicFish(fishName)
+    local lower = string.lower(fishName)
+    for _, baseName in ipairs(MythicFishList) do
+        if string.find(lower, string.lower(baseName), 1, true) then
+            return baseName
+        end
+    end
+    return nil
+end
+
+-- Deteksi ikan tier MYTHIC khusus Galatama (Pailatee / SPFin Shark), sama persis
+-- logic-nya kayak FindSecretFish tapi buat GalatamaMythicList, plus deteksi mutasi-nya.
+local function FindGalatamaMythicFish(fishName)
+    local lower = string.lower(fishName)
+    for _, baseName in ipairs(GalatamaMythicList) do
+        if lower == string.lower(baseName) then return baseName, nil end
+    end
+    local bestBase, bestLen, bestMutasi = nil, 0, nil
+    for _, baseName in ipairs(GalatamaMythicList) do
+        local s = string.find(lower, string.lower(baseName), 1, true)
+        if s then
+            local mutasi = nil
+            if s > 1 then
+                mutasi = fishName:sub(1, s - 1):match("^%s*(.-)%s*$")
+                if mutasi == "" then mutasi = nil end
+            end
+            if #baseName > bestLen then
+                bestLen    = #baseName
+                bestBase   = baseName
+                bestMutasi = mutasi
+            end
+        end
+    end
+    return bestBase, bestMutasi
+end
+
+-- Cari bonus mutasi FLAT (dipakai buat Secret & Mythic Galatama, tinggal beda angka
+-- flatAmount-nya). Mutasi dicek per-kata: kalau ADA minimal 1 kata yang bukan
+-- "big"/"shiny", berarti ada mutasi beneran -> dapet flatAmount. Kalau mutasi kosong,
+-- atau isinya cuma "Big"/"Shiny" doang (tanpa mutasi beneran), bonusnya 0.
 local function GetFlatMutasiBonus(mutasi, flatAmount)
     if not mutasi or mutasi == "" then return 0, nil end
     local hasQualifying = false
@@ -781,31 +705,6 @@ local function FindGalatamaFish(baseName)
         if lower == name:lower() then return name end
     end
     return nil
-end
-
--- Deteksi ikan tier MYTHIC, sama persis logic-nya kayak FindSecretFish tapi buat MythicList.
-local function FindMythicFish(fishName)
-    local lower = string.lower(fishName)
-    for _, baseName in ipairs(MythicList) do
-        if lower == string.lower(baseName) then return baseName, nil end
-    end
-    local bestBase, bestLen, bestMutasi = nil, 0, nil
-    for _, baseName in ipairs(MythicList) do
-        local s = string.find(lower, string.lower(baseName), 1, true)
-        if s then
-            local mutasi = nil
-            if s > 1 then
-                mutasi = fishName:sub(1, s - 1):match("^%s*(.-)%s*$")
-                if mutasi == "" then mutasi = nil end
-            end
-            if #baseName > bestLen then
-                bestLen    = #baseName
-                bestBase   = baseName
-                bestMutasi = mutasi
-            end
-        end
-    end
-    return bestBase, bestMutasi
 end
 
 -- Resolve key GalatamaStats buat player ini. Kalau uid ADA dan sebelumnya sempat ada catch
@@ -887,11 +786,8 @@ end
 
 -- ============================================================
 --  CHECK PLAYER ON SERVER
---  Ambil Caught & Map (lokasi) dari leaderstats tiap player,
---  plus scan Server Luck & timer sisa dari teks GUI game.
 -- ============================================================
 
--- Cari child dengan nama tertentu di dalam sebuah container (leaderstats, dll).
 local function FindValueByName(container, names)
     if not container then return nil end
     for _, n in ipairs(names) do
@@ -901,8 +797,6 @@ local function FindValueByName(container, names)
     return nil
 end
 
--- Cari ke SELURUH descendant instance (bukan cuma leaderstats) buat nama yang match,
--- dipakai sebagai fallback kalau statnya ternyata gak ada di leaderstats.
 local function FindValueRecursive(instance, names)
     if not instance then return nil end
     local wanted = {}
@@ -916,13 +810,9 @@ local function FindValueRecursive(instance, names)
     return nil
 end
 
--- Cari value Map/Location di dalam WORKSPACE, bukan cuma di dalam Player itu sendiri.
--- Beberapa game nyimpen data per-player di folder terpisah di workspace
--- (misal workspace.PlayerName.Map), bukan di leaderstats.
 local function FindPlayerValueInWorkspace(player, names)
     if not player then return nil end
 
-    -- pola umum #1: ada folder di workspace yang namanya SAMA PERSIS kayak nama player
     local playerFolder = Workspace:FindFirstChild(player.Name)
     if playerFolder then
         local direct = FindValueByName(playerFolder, names)
@@ -931,9 +821,6 @@ local function FindPlayerValueInWorkspace(player, names)
         if nested then return nested end
     end
 
-    -- pola umum #2: scan seluruh descendant workspace, cari instance yang namanya
-    -- match, TAPI cuma dianggap valid kalau salah satu leluhurnya juga ada nama playernya
-    -- (biar gak ketuker sama punya player lain).
     local lowerPlayerName = string.lower(player.Name)
     local wanted = {}
     for _, n in ipairs(names) do wanted[string.lower(n)] = true end
@@ -955,15 +842,11 @@ local function FindPlayerValueInWorkspace(player, names)
 end
 
 -- ============================================================
---  NEAREST SPAWN LOCATION (fallback lokasi player)
---  Game ini gak nge-track lokasi player lewat stat, jadi kita
---  hitung sendiri: cari SpawnLocation terdekat dari posisi
---  HumanoidRootPart player. Posisi character direplikasi ke semua
---  client jadi ini reliable, beda sama data privat semacam stat.
+--  NEAREST SPAWN LOCATION (fallback lokasi player, dihitung dari jarak ke SpawnLocation)
 -- ============================================================
 
 local SPAWN_FOLDER_NAME  = "!!! SPAWN LOCATIONS"
-local SPAWN_MAX_DISTANCE = 400 -- studs, di atas ini dianggap "Unknown Area"
+local SPAWN_MAX_DISTANCE = 400
 
 local function CacheSpawnLocations()
     SpawnPointCache = {}
@@ -979,12 +862,8 @@ local function CacheSpawnLocations()
             local areaName
 
             if lowerName == "spawnlocation" or lowerName == "spawn" then
-                -- struktur aslinya "!!! SPAWN LOCATIONS" > "<Nama Area>" > "SpawnLocation"
-                -- (part-nya sendiri namanya generik "SpawnLocation"), jadi nama area
-                -- diambil dari PARENT folder-nya, bukan dari nama part itu sendiri.
                 areaName = obj.Parent and obj.Parent.Name or nil
             else
-                -- fallback lama: kalau part-nya bernama "Copper Canyon SpawnLocation"
                 areaName = obj.Name:gsub("%s*[Ss]pawn[Ll]ocation%s*$", "")
             end
 
@@ -996,12 +875,8 @@ local function CacheSpawnLocations()
     end
 
     print("[BLOX Gank DEBUG] CacheSpawnLocations: ketemu " .. #SpawnPointCache .. " spawn point.")
-    for _, sp in ipairs(SpawnPointCache) do
-        print("    [SPAWN POINT] " .. sp.name .. " @ " .. tostring(sp.position))
-    end
 end
 
--- Cari nama area terdekat dari posisi karakter player.
 local function GetNearestSpawnArea(player)
     if #SpawnPointCache == 0 then return nil end
     local char = player and player.Character
@@ -1022,11 +897,10 @@ local function GetNearestSpawnArea(player)
     if nearestName and nearestDist <= SPAWN_MAX_DISTANCE then
         return nearestName
     end
-    return nil -- terlalu jauh dari spawn manapun, gak yakin lokasinya
+    return nil
 end
 
--- Ambil nilai Caught & Map dari leaderstats player (nama stat asli:
--- Pemain / caught, dan lokasi disimpan di stat "Map").
+-- Ambil Caught & Map dari leaderstats; fallback: descendant player -> workspace -> attribute -> nearest spawn
 local function GetPlayerStatsAndLocation(player)
     local caught, location = "N/A", "N/A"
     if not player then return caught, location end
@@ -1035,21 +909,17 @@ local function GetPlayerStatsAndLocation(player)
     local caughtStat = FindValueByName(ls, { "caught", "Caught" })
     if caughtStat then caught = FormatNumber(caughtStat.Value) end
 
-    -- Urutan pencarian Map: leaderstats -> seluruh descendant player -> workspace -> attribute -> NEAREST SPAWN (fallback terakhir)
     local locStat = FindValueByName(ls, { "Map", "map", "Location", "Zone" })
         or FindValueRecursive(player, { "Map", "map", "Location", "Zone" })
         or FindPlayerValueInWorkspace(player, { "Map", "map", "Location", "Zone" })
     if locStat then
         location = tostring(locStat.Value)
     else
-        -- coba baca dari Attribute (bukan child Instance)
         local attrLoc = player:GetAttribute("Map") or player:GetAttribute("map")
             or player:GetAttribute("Location") or player:GetAttribute("Zone")
         if attrLoc ~= nil then
             location = tostring(attrLoc)
         else
-            -- fallback terakhir -- game ini gak nge-track lokasi lewat stat,
-            -- jadi hitung sendiri dari posisi player vs SpawnLocation terdekat.
             local nearest = GetNearestSpawnArea(player)
             if nearest then location = nearest .. " (est.)" end
         end
@@ -1058,9 +928,7 @@ local function GetPlayerStatsAndLocation(player)
     return caught, location
 end
 
--- NOTE: ini scanner HEURISTIK (nebak dari pola teks), karena Server Luck &
--- End Server Luck cuma ada di GUI game (bukan value/stat). Kalau hasilnya
--- kosong/salah, cek langsung teks GUI game-nya dan sesuaikan pattern di bawah ini.
+-- Scanner heuristik: Server Luck & timer sisa cuma ada di teks GUI, bukan value/stat
 local function ScanServerLuckInfo()
     local luckValue, luckEnds = nil, nil
     local pg = Players.LocalPlayer:FindFirstChild("PlayerGui")
@@ -1086,7 +954,6 @@ local function ScanServerLuckInfo()
     return luckValue, luckEnds
 end
 
--- Susun deskripsi embed persis format "Check Player On Server"
 local function BuildPlayerCheckDescription()
     local players = Players:GetPlayers()
     local lines = {}
@@ -1097,7 +964,7 @@ local function BuildPlayerCheckDescription()
     for _, p in ipairs(players) do
         local caught, location = GetPlayerStatsAndLocation(p)
         table.insert(lines, string.format(
-            "• **%s** - 🐟 Caught: %s - %s %s",
+            "• **%s** -  Caught: %s - %s %s",
             p.Name, caught, EMOJI_LOCATION, location
         ))
     end
@@ -1111,7 +978,6 @@ local function BuildPlayerCheckDescription()
 
     return table.concat(lines, "\n")
 end
-
 -- ============================================================
 --  WEBHOOK SENDERS
 -- ============================================================
@@ -1134,18 +1000,23 @@ local function BuildEmbed(title, description, color, fields, imageUrl, thumbUrl,
     }
     if imageUrl then embed.image     = { url = imageUrl } end
     if thumbUrl then embed.thumbnail = { url = thumbUrl } end
-    embed.author = author or BrandAuthor()
+    -- author == false artinya sengaja gak mau nampilin author sama sekali (beda dari nil = default brand)
+    if author == nil then
+        embed.author = BrandAuthor()
+    elseif author ~= false then
+        embed.author = author
+    end
     return embed
 end
 
 local function PostWebhook(url, body)
     local requestFunc = GetRequestFunc()
     if not requestFunc then
-        warn("[BLOX Gank DEBUG] PostWebhook gagal: gak ketemu request function (syn.request/http.request/http_request/fluxus.request/request semuanya nil). Executor lo mungkin gak support salah satu dari itu.")
+        warn("[BLOX Gank DEBUG] PostWebhook gagal: gak ketemu request function.")
         return
     end
     if url == "" then
-        warn("[BLOX Gank DEBUG] PostWebhook gagal: url webhook KOSONG (\"\"). Cek input webhooknya udah keisi belum pas klik START MONITORING.")
+        warn("[BLOX Gank DEBUG] PostWebhook gagal: url webhook kosong.")
         return
     end
     task.spawn(function()
@@ -1158,52 +1029,50 @@ local function PostWebhook(url, body)
             })
             local status = res and (res.StatusCode or res.status_code)
             if status and (status < 200 or status >= 300) then
-                warn("[BLOX Gank DEBUG] Webhook response bukan 2xx! Status: " .. tostring(status) .. " | Body: " .. tostring(res.Body or res.body))
+                warn("[BLOX Gank DEBUG] Webhook response bukan 2xx! Status: " .. tostring(status))
             end
         end)
         if not ok then
-            warn("[BLOX Gank DEBUG] PostWebhook ERROR pas request: " .. tostring(err))
+            warn("[BLOX Gank DEBUG] PostWebhook ERROR: " .. tostring(err))
         end
     end)
 end
 
-local function BuildContent(mention, captionType)
-    if not mention or mention == "" then return nil end
-    local m = Trim(mention)
-    if captionType == "secret" or captionType == "forgotten" then return "Hari hari bersyukur " .. m
-    elseif captionType == "leave"   then return "ke disconect ya? " .. m
-    elseif captionType == "join"    then return "alhamdulilah kembali " .. m
-    elseif captionType == "notback" then return "lah kok ngilang " .. m
-    elseif captionType == "mutasi"  then return "cek mutasinya " .. m
+local function BuildContent(captionType)
+    if captionType == "forgotten" then return "forgotten kak"
+    elseif captionType == "secret" then return "Secret atau core it"
+    elseif captionType == "leave"   then return "ke disconect ya?"
+    elseif captionType == "join"    then return "yeay kembali"
+    elseif captionType == "notback" then return "lah kok ngilang"
+    elseif captionType == "mutasi"  then return "cek mutasinya"
+    elseif captionType == "afk"     then return "mancing gak si"
     end
-    return m
+    return nil
 end
 
-local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl, mention, captionType)
+local function SendWebhook(title, description, color, fields, imageUrl, thumbUrl, captionType)
     local f = {}
     for _, v in ipairs(fields) do table.insert(f, v) end
     PostWebhook(WEBHOOK_URL, {
         username   = "BLOX Gank",
         avatar_url = WEBHOOK_AVATAR,
-        content    = BuildContent(mention, captionType),
+        content    = BuildContent(captionType),
         embeds     = { BuildEmbed(title, description, color, f, imageUrl, thumbUrl) },
     })
 end
 
-local function SendFishWebhook(title, description, color, fields, imageUrl, thumbUrl, mention, captionType)
+local function SendFishWebhook(title, description, color, fields, imageUrl, thumbUrl, captionType)
     local url = (WEBHOOK_FISH ~= "") and WEBHOOK_FISH or WEBHOOK_URL
     if url == "" then return end
     local f = {}
     for _, v in ipairs(fields) do table.insert(f, v) end
     PostWebhook(url, {
-        content = BuildContent(mention, captionType),
+        content = BuildContent(captionType),
         embeds  = { BuildEmbed(title, description, color, f, imageUrl, thumbUrl) },
     })
 end
 
--- Webhook khusus mutasi list, terpisah dari webhook secret fish.
--- Fallback: kalau WEBHOOK_MUTASI kosong -> pakai WEBHOOK_FISH -> kalau itu juga kosong pakai WEBHOOK_URL.
-local function SendMutasiWebhook(title, description, color, fields, imageUrl, thumbUrl, mention, captionType)
+local function SendMutasiWebhook(title, description, color, fields, imageUrl, thumbUrl, captionType)
     local url = (WEBHOOK_MUTASI ~= "") and WEBHOOK_MUTASI
         or ((WEBHOOK_FISH ~= "") and WEBHOOK_FISH or WEBHOOK_URL)
     if url == "" then return end
@@ -1212,28 +1081,20 @@ local function SendMutasiWebhook(title, description, color, fields, imageUrl, th
     PostWebhook(url, {
         username   = "BLOX Gank Mutasi",
         avatar_url = WEBHOOK_AVATAR,
-        content    = BuildContent(mention, captionType),
+        content    = BuildContent(captionType),
         embeds     = { BuildEmbed(title, description, color, f, imageUrl, thumbUrl, "BLOX Gank Mutasi List") },
     })
 end
 
--- Webhook "Check Player On Server" -- kirim daftar semua player + coin + lokasi + server luck.
--- Fallback: kalau WEBHOOK_CHECKPLAYER kosong -> pakai WEBHOOK_STATS -> kalau itu juga kosong pakai WEBHOOK_URL.
 local function SendPlayerCheckWebhook()
-    local url = (WEBHOOK_CHECKPLAYER ~= "") and WEBHOOK_CHECKPLAYER
-        or ((WEBHOOK_STATS ~= "") and WEBHOOK_STATS or WEBHOOK_URL)
-
-    print("[BLOX Gank DEBUG] SendPlayerCheckWebhook dipanggil. WEBHOOK_CHECKPLAYER='" .. tostring(WEBHOOK_CHECKPLAYER)
-        .. "' WEBHOOK_STATS='" .. tostring(WEBHOOK_STATS) .. "' WEBHOOK_URL='" .. tostring(WEBHOOK_URL)
-        .. "' -> dipakai: '" .. tostring(url) .. "'")
+    local url = (WEBHOOK_CHECKPLAYER ~= "") and WEBHOOK_CHECKPLAYER or WEBHOOK_URL
 
     if url == "" then
-        warn("[BLOX Gank DEBUG] SendPlayerCheckWebhook batal: gak ada webhook valid sama sekali (checkplayer/stats/join semuanya kosong).")
+        warn("[BLOX Gank DEBUG] SendPlayerCheckWebhook batal: gak ada webhook valid.")
         return
     end
 
     local description = BuildPlayerCheckDescription()
-    print("[BLOX Gank DEBUG] Deskripsi embed panjangnya " .. tostring(#description) .. " karakter")
     PostWebhook(url, {
         username   = "BLOX Gank",
         avatar_url = WEBHOOK_AVATAR,
@@ -1328,20 +1189,22 @@ local function SendEventWebhook(eventData, rawText)
 end
 
 -- ============================================================
---  EVENT DETECTION
---  Event aktif sekarang: Treasure Hunt, Thunderzilla Hunt, & Crystal Event.
---  Filter relevansi cek keyword "hunt" ATAU "crystal" sebelum masuk ke
---  pengecekan trigger detail per-event di bawah.
+--  AFK / IDLE WEBHOOK SENDER
+-- ============================================================
+
+local function SendAfkWebhook(pName, avatarUrl)
+    SendWebhook(EMOJI_AFK .. " Player Idle Terdeteksi", "Pemain ini kayaknya lagi gak mancing (gak ada catch sama sekali).", TierColors.AFK, {
+        { name = SEP .. " Username", value = "**" .. pName .. "**",                          inline = true },
+        { name = SEP .. " Info",     value = "Tidak ada catch selama **60 menit**",           inline = true },
+    }, nil, avatarUrl, "afk")
+end
+
+-- ============================================================
+--  EVENT DETECTION (edge-trigger per label: notif cuma kirim sekali pas OFF -> ON)
 -- ============================================================
 
 local _hookedLabels = {}
-
--- Edge-trigger per-label: notif cuma dikirim sekali pas teks label itu PERTAMA KALI
--- berubah dari "gak match trigger" jadi "match trigger". Selama label itu masih
--- nampilin teks yang match (misal ada countdown "Ends in 04:32" yang update tiap
--- detik), gak akan re-trigger. EVENT_COOLDOWN_SECONDS + EventCooldown dibiarin
--- sebagai pengaman tambahan (misal ada 2 label GUI berbeda buat event yang sama).
-local LabelEventState = {} -- [label] = { [eventTitle] = true/false (match state terakhir) }
+local LabelEventState = {}
 
 local function ProcessEventText(text, label)
     if not SCRIPT_ACTIVE then return end
@@ -1349,7 +1212,7 @@ local function ProcessEventText(text, label)
     if not text or text == "" then return end
     local lower = text:lower()
 
-    local isRelevant = lower:find("hunt") or lower:find("crystal")
+    local isRelevant = lower:find("hunt") or lower:find("crystal") or lower:find("blizzard") or lower:find("storm") or lower:find("volcanic") or lower:find("volcano") or lower:find("kraken")
 
     local state = LabelEventState[label]
     if not state then
@@ -1368,7 +1231,6 @@ local function ProcessEventText(text, label)
         local wasMatched = state[evData.title] or false
         state[evData.title] = matched
 
-        -- kirim CUMA pas transisi OFF -> ON (event baru mulai), bukan tiap kali teks berubah
         if matched and not wasMatched then
             local now = os.time()
             if (now - (EventCooldown[evData.title] or 0)) >= EVENT_COOLDOWN_SECONDS then
@@ -1386,7 +1248,6 @@ local function HookLabel(label)
     label:GetPropertyChangedSignal("Text"):Connect(function()
         ProcessEventText(label.Text, label)
     end)
-    -- bersihin state pas label ke-destroy, biar gak numpuk memory kalau GUI sering bikin/hapus label
     label.AncestryChanged:Connect(function(_, parent)
         if not parent then LabelEventState[label] = nil end
     end)
@@ -1435,6 +1296,181 @@ local function GetAvatarUrlById(userId)
     return PROXY .. "/avatar/" .. tostring(userId) .. "?t=" .. tostring(os.time())
 end
 
+-- ============================================================
+--  ELEMENTAL BALANCER MONITOR
+--  Angka count dibaca dari attribute "Players" di folder PressurePlates.
+--  Nama pemain per elemen di-scan pakai polling GetPartsInPart (bukan Touched
+--  -- lebih reliable, gak tergantung event fisika/CanCollide/timing).
+-- ============================================================
+
+local _lastBalanceState  = nil
+local _lastBalanceCooldown = 0
+local BALANCE_CHECK_INTERVAL = 10
+
+local ElementPlayers = { Fire = {}, Frozen = {}, Storm = {} }
+
+local function GetCountersFolder()
+    return Workspace:FindFirstChild("Islands")
+        and Workspace.Islands:FindFirstChild("Throne Room")
+        and Workspace.Islands["Throne Room"]:FindFirstChild("ThroneRoomFishing")
+        and Workspace.Islands["Throne Room"].ThroneRoomFishing:FindFirstChild("Counters")
+end
+
+-- Scan siapa aja yang lagi ada di plate tiap elemen, pakai bounding box tiap PressurePlate
+-- (diperbesar sedikit) -- lebih toleran daripada overlap persis ke mesh Cube/Cell yang kecil,
+-- biar pemain yang berdiri agak di pinggir plate tetap kedetect.
+local function RefreshElementPlayers()
+    local counters = GetCountersFolder()
+    if not counters then return end
+
+    local overlapParams = OverlapParams.new()
+    overlapParams.FilterType = Enum.RaycastFilterType.Exclude
+    overlapParams.FilterDescendantsInstances = {}
+
+    for _, elem in ipairs({"Fire", "Frozen", "Storm"}) do
+        local names = {}
+        local folder = counters:FindFirstChild(elem)
+        local plates = folder and folder:FindFirstChild("PressurePlates")
+        if plates then
+            for _, plateModel in ipairs(plates:GetChildren()) do
+                local ok, cframe, size = pcall(function()
+                    return plateModel:GetBoundingBox()
+                end)
+                if ok and cframe then
+                    local paddedSize = size + Vector3.new(6, 10, 6)
+                    local ok2, hits = pcall(function()
+                        return Workspace:GetPartBoundsInBox(cframe, paddedSize, overlapParams)
+                    end)
+                    if ok2 and hits then
+                        for _, hitPart in ipairs(hits) do
+                            local char = hitPart.Parent
+                            local player = char and Players:GetPlayerFromCharacter(char)
+                            if player then names[player.UserId] = player.Name end
+                        end
+                    end
+                end
+            end
+        end
+        ElementPlayers[elem] = names
+    end
+end
+
+local function GetElementPlayerNames(elem)
+    local names = {}
+    for _, name in pairs(ElementPlayers[elem]) do
+        table.insert(names, name)
+    end
+    return #names > 0 and table.concat(names, ", ") or "—"
+end
+
+local function GetElementCounts()
+    local ok, result = pcall(function()
+        local counters = GetCountersFolder()
+        if not counters then return nil end
+
+        local counts = {}
+        for _, elem in ipairs({"Fire", "Frozen", "Storm"}) do
+            local folder = counters:FindFirstChild(elem)
+            local plates = folder and folder:FindFirstChild("PressurePlates")
+            counts[elem] = (plates and plates:GetAttribute("Players")) or 0
+        end
+        return counts
+    end)
+    if not ok then
+        warn("[BLOX Gank DEBUG] GetElementCounts pcall ERROR: " .. tostring(result))
+        return nil
+    end
+    return result
+end
+
+local function StartElementalBalancerMonitor()
+    task.spawn(function()
+        while SCRIPT_ACTIVE do
+            task.wait(BALANCE_CHECK_INTERVAL)
+            if not SCRIPT_ACTIVE then break end
+
+            local counts = GetElementCounts()
+            if counts then
+                local fire   = counts["Fire"]   or 0
+                local frozen = counts["Frozen"] or 0
+                local storm  = counts["Storm"]  or 0
+                local total  = fire + frozen + storm
+
+                if total > 0 then
+                    RefreshElementPlayers()
+
+                    local isBalanced = (fire == frozen) and (frozen == storm) and (fire > 0)
+                    local stateNow   = isBalanced and "balanced" or "unbalanced"
+                    local formation  = fire .. "-" .. frozen .. "-" .. storm
+
+                    if stateNow ~= _lastBalanceState then
+                        local now = os.time()
+                        if (now - _lastBalanceCooldown) >= EVENT_COOLDOWN_SECONDS then
+                            _lastBalanceCooldown = now
+                            _lastBalanceState    = stateNow
+
+                            local url = (WEBHOOK_BALANCER ~= "") and WEBHOOK_BALANCER
+                                or ((WEBHOOK_EVENT ~= "") and WEBHOOK_EVENT or WEBHOOK_URL)
+                            if url ~= "" then
+                                local title, color
+                                if isBalanced then
+                                    title = EMOJI_THUNDER_TITLE .. " Elemental Balancer — BALANCE!"
+                                    color = 10181046
+                                else
+                                    title = EMOJI_THUNDER_TITLE .. " Elemental Balancer — TIDAK SEIMBANG"
+                                    color = 8421504
+                                end
+
+                                PostWebhook(url, {
+                                    username   = "BLOX Gank Event",
+                                    avatar_url = WEBHOOK_AVATAR,
+                                    content    = "<@&" .. ROLE_NELAYAN_ID .. ">",
+                                    embeds     = { BuildEmbed(
+                                        title, "", color,
+                                        {
+                                            { name = SEP .. " Fire",    value = "**" .. fire   .. "** player (" .. GetElementPlayerNames("Fire")   .. ")", inline = true },
+                                            { name = SEP .. " Frozen",  value = "**" .. frozen .. "** player (" .. GetElementPlayerNames("Frozen") .. ")", inline = true },
+                                            { name = SEP .. " Storm",   value = "**" .. storm  .. "** player (" .. GetElementPlayerNames("Storm")  .. ")", inline = true },
+                                            { name = SEP .. " Host",    value = "**" .. Players.LocalPlayer.Name .. "**", inline = true },
+                                            { name = SEP .. " Formasi", value = "**" .. formation .. "**",     inline = true },
+                                        },
+                                        nil, FishImageURL["Overlord Hydra"],
+                                        "BLOX Gank Elemental Balancer",
+                                        false
+                                    )},
+                                })
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+
+local function StartAfkMonitor()
+    task.spawn(function()
+        while SCRIPT_ACTIVE do
+            task.wait(AFK_CHECK_INTERVAL)
+            if not SCRIPT_ACTIVE then break end
+
+            local now = os.time()
+            for uid, stats in pairs(PlayerStats) do
+                local baseline = stats.lastCatchTime or stats.joinTime or now
+                if not stats.afkNotified and (now - baseline) >= AFK_THRESHOLD_SECONDS then
+                    stats.afkNotified = true
+
+                    local player     = Players:GetPlayerByUserId(uid)
+                    local pName      = (player and player.Name) or stats.name or "Unknown"
+                    local avatarUrl  = AvatarCache[uid] or GetAvatarUrlById(uid)
+
+                    SendAfkWebhook(pName, avatarUrl)
+                end
+            end
+        end
+    end)
+end
+
 local function CheckAndSend(rawMsg)
     if not SCRIPT_ACTIVE then return end
     if not string.find(string.lower(rawMsg), "obtained") then return end
@@ -1449,46 +1485,58 @@ local function CheckAndSend(rawMsg)
 
     if uid then
         if not PlayerStats[uid] then
-            PlayerStats[uid] = { catchCount = 0, secretList = {}, joinTime = os.time(), name = data.player }
+            PlayerStats[uid] = { catchCount = 0, secretList = {}, joinTime = os.time(), name = data.player, lastCatchTime = os.time(), afkNotified = false }
         end
         PlayerStats[uid].catchCount = PlayerStats[uid].catchCount + 1
+        PlayerStats[uid].lastCatchTime = os.time()
+        PlayerStats[uid].afkNotified   = false
     end
 
     local legendaryBase = FindLegendaryCrystal(data.fish)
     if legendaryBase then
         local imageUrl = GetFishImageURL(legendaryBase) or (FishImageCache[legendaryBase] and (PROXY .. "/asset/" .. FishImageCache[legendaryBase]))
-        SendFishWebhook(EMOJI_LEGENDARY .. " Crystalized Legendary!", " " .. EMOJI_MUTASI, TierColors.Legendary, {
+        SendFishWebhook(EMOJI_LEGENDARY .. " Crystalized Legendary!", "", TierColors.Legendary, {
             { name = SEP .. " Pemain", value = "**" .. data.player .. "**", inline = true },
             { name = SEP .. " Item",   value = "**" .. data.fish .. "**",   inline = true },
             { name = SEP .. " Berat",  value = "**" .. data.weight .. "**", inline = true },
-        }, nil, imageUrl, nil, "secret")
+        }, nil, imageUrl, "secret")
+        return
+    end
+
+    local mythicBase = FindMythicFish(data.fish)
+    if mythicBase then
+        local imageUrl = GetFishImageURL(mythicBase) or (FishImageCache[mythicBase] and (PROXY .. "/asset/" .. FishImageCache[mythicBase]))
+        SendFishWebhook(EMOJI_NOTIF .. " Mythic Fish Detected!", "", TierColors.Mitos, {
+            { name = SEP .. " Pemain", value = "**" .. data.player .. "**", inline = true },
+            { name = SEP .. " Ikan",   value = "**" .. data.fish .. "**",   inline = true },
+            { name = SEP .. " Berat",  value = "**" .. data.weight .. "**", inline = true },
+        }, nil, imageUrl, "secret")
         return
     end
 
     local rubyBase = FindRuby(data.fish)
     if rubyBase then
         local imageUrl = GetFishImageURL(rubyBase) or (FishImageCache[rubyBase] and (PROXY .. "/asset/" .. FishImageCache[rubyBase]))
-        SendFishWebhook(EMOJI_RUBY .. " Ruby Gemstone!", "Goceng" .. EMOJI_RUBY, TierColors.Ruby, {
+        SendFishWebhook(EMOJI_RUBY .. " Ruby Gemstone!", "", TierColors.Ruby, {
             { name = SEP .. " Pemain", value = "**" .. data.player .. "**", inline = true },
             { name = SEP .. " Item",   value = "**" .. data.fish .. "**",   inline = true },
             { name = SEP .. " Berat",  value = "**" .. data.weight .. "**", inline = true },
-        }, nil, imageUrl, nil, "secret")
+        }, nil, imageUrl, "secret")
         return
     end
 
-    local mythicBase, mythicMutasi = FindMythicFish(data.fish)
-    if mythicBase then
-        local imageUrl = GetFishImageURL(mythicBase) or (FishImageCache[mythicBase] and (PROXY .. "/asset/" .. FishImageCache[mythicBase]))
-        local mythicMutasiField = mythicMutasi and (EMOJI_MUTASI .. " *" .. mythicMutasi .. "*") or "—"
+    local galMythicBase, galMythicMutasi = FindGalatamaMythicFish(data.fish)
+    if galMythicBase then
+        local imageUrl = GetFishImageURL(galMythicBase) or (FishImageCache[galMythicBase] and (PROXY .. "/asset/" .. FishImageCache[galMythicBase]))
+        local galMythicMutasiField = galMythicMutasi and (EMOJI_MUTASI .. " *" .. galMythicMutasi .. "*") or "—"
         local fields = {
             { name = SEP .. " Pemain", value = "**" .. data.player .. "**", inline = true },
             { name = SEP .. " Ikan",   value = "**" .. data.fish .. "**",   inline = true },
             { name = SEP .. " Berat",  value = "**" .. data.weight .. "**", inline = true },
-            { name = SEP .. " Mutasi", value = mythicMutasiField,           inline = true },
+            { name = SEP .. " Mutasi", value = galMythicMutasiField,        inline = true },
         }
-        -- Bonus mutasi tier Mythic: FLAT 250 (kecuali Big/Shiny)
-        ApplyGalatamaScoring(fields, uid, data.player, mythicBase, MythicFishPoints[mythicBase], mythicMutasi, GALATAMA_MYTHIC_MUTASI_BONUS)
-        SendFishWebhook(EMOJI_MYTHIC .. " Mythic Tier Detected!", " " .. EMOJI_MYTHIC, TierColors.Mythic, fields, nil, imageUrl, GetMention(data.player), "secret")
+        ApplyGalatamaScoring(fields, uid, data.player, galMythicBase, GalatamaMythicFishPoints[galMythicBase], galMythicMutasi, GALATAMA_MYTHIC_MUTASI_BONUS)
+        SendFishWebhook("🔱 Mythic Tier Detected!", "", TierColors.Mitos, fields, nil, imageUrl, "secret")
         return
     end
 
@@ -1518,14 +1566,13 @@ local function CheckAndSend(rawMsg)
             ApplyGalatamaScoring(fields, uid, data.player, galBase, GalatamaFishPoints[galBase], mutasi, GALATAMA_SECRET_MUTASI_BONUS)
         end
         if isForgotten then
-            SendFishWebhook(EMOJI_FORGOTTEN .. " Forgotten Tier Detected!", " " .. EMOJI_FORGOTTEN, TierColors.Forgotten, fields, nil, imageUrl, GetMention(data.player), "forgotten")
+            SendFishWebhook(EMOJI_FORGOTTEN .. " Forgotten Tier Detected!", "", TierColors.Forgotten, fields, nil, imageUrl, "forgotten")
         else
-            SendFishWebhook(EMOJI_NOTIF .. " Secret Fish Detected!", " ", TierColors.Secret, fields, nil, imageUrl, GetMention(data.player), "secret")
+            SendFishWebhook(EMOJI_NOTIF .. " Secret Fish Detected!", "", TierColors.Secret, fields, nil, imageUrl, "secret")
         end
         return
     end
 
-    -- Mutasi (di luar secret fish) dikirim ke webhook mutasi sendiri, tanpa mention.
     local mutasiDetected = FindMutasi(data.fish)
     if not mutasiDetected then return end
 
@@ -1541,7 +1588,7 @@ local function CheckAndSend(rawMsg)
             { name = SEP .. " Berat",  value = "**" .. data.weight .. "**",            inline = true },
             { name = SEP .. " Mutasi", value = EMOJI_MUTASI .. " " .. mutasiDetected,  inline = true },
         },
-        nil, avatarUrl, nil, "mutasi"
+        nil, avatarUrl, "mutasi"
     )
 end
 
@@ -1579,8 +1626,6 @@ local function HookChat()
             local text = msg.Text or ""
             if msg.TextSource == nil then CheckAndSend(text) end
 
-            -- Command manual buat trigger "Check Player On Server" kapan aja.
-            -- Ketik !checkplayer di chat game buat langsung kirim ke webhook.
             local lowerText = Trim(string.lower(text))
             if lowerText == "!checkplayer" then
                 SendPlayerCheckWebhook()
@@ -1615,7 +1660,7 @@ end
 -- ============================================================
 
 local function StartMonitoring()
-    CacheSpawnLocations() -- scan folder "!!! SPAWN LOCATIONS" sekali di awal monitoring
+    CacheSpawnLocations()
 
     local allPlayers = Players:GetPlayers()
     local names      = {}
@@ -1629,28 +1674,24 @@ local function StartMonitoring()
 
     HookChat()
     StartEventMonitor()
-
-    -- NOTE: webhook "Check Player On Server" cuma kekirim kalau di-trigger manual
-    -- (klik tombol CHECK PLAYER di panel, atau ketik "!checkplayer" di chat game).
-    -- Gak ada loop auto-send / rekap otomatis lagi.
+    StartElementalBalancerMonitor()
+    StartAfkMonitor()
 
     for _, p in ipairs(allPlayers) do
         WatchForFish(p)
         AvatarCache[p.UserId]                       = GetAvatarUrlById(p.UserId)
-        PlayerStats[p.UserId]                       = { catchCount = 0, secretList = {}, joinTime = os.time(), name = p.Name }
+        PlayerStats[p.UserId]                       = { catchCount = 0, secretList = {}, joinTime = os.time(), name = p.Name, lastCatchTime = os.time(), afkNotified = false }
         PlayerNameToId[string.lower(p.Name)]        = p.UserId
         PlayerNameToId[string.lower(p.DisplayName)] = p.UserId
-        BuildMentionCache(p.Name, p.DisplayName)
         ResolveGalatamaKey(p.UserId, p.Name) -- gabungin stray stat Galatama (fallback key nama) kalau ada
     end
 
     Players.PlayerAdded:Connect(function(player)
         if not SCRIPT_ACTIVE then return end
         LeaveTimers[player.UserId] = nil
-        PlayerStats[player.UserId] = { catchCount = 0, secretList = {}, joinTime = os.time(), name = player.Name }
+        PlayerStats[player.UserId] = { catchCount = 0, secretList = {}, joinTime = os.time(), name = player.Name, lastCatchTime = os.time(), afkNotified = false }
         PlayerNameToId[string.lower(player.Name)]        = player.UserId
         PlayerNameToId[string.lower(player.DisplayName)] = player.UserId
-        BuildMentionCache(player.Name, player.DisplayName)
         ResolveGalatamaKey(player.UserId, player.Name) -- gabungin stray stat Galatama (fallback key nama) kalau ada
         task.spawn(function()
             task.wait(1)
@@ -1658,7 +1699,7 @@ local function StartMonitoring()
             SendWebhook(EMOJI_JOIN .. " Player Joined Server", "welcam", TierColors.Join, {
                 { name = SEP .. " Username",     value = "**" .. player.Name .. "**",                     inline = true },
                 { name = SEP .. " Total Player", value = "**" .. tostring(#Players:GetPlayers()) .. "**", inline = true },
-            }, nil, AvatarCache[player.UserId], GetMention(player.Name), "join")
+            }, nil, AvatarCache[player.UserId], "join")
         end)
         WatchForFish(player)
     end)
@@ -1669,25 +1710,23 @@ local function StartMonitoring()
         local pId        = player.UserId
         local avatarUrl  = AvatarCache[pId] or GetAvatarUrlById(pId)
         local totalNow   = #Players:GetPlayers() - 1
-        local mentionStr = GetMention(pName)
 
         AvatarCache[pId]                    = nil
         PlayerStats[pId]                    = nil
         PlayerNameToId[string.lower(pName)] = nil
         for k, v in pairs(PlayerNameToId) do if v == pId then PlayerNameToId[k] = nil end end
-        MentionCache[string.lower(pName)]   = nil
 
         SendWebhook(EMOJI_LEAVE .. " Player Left Server", "Salah satu pemain keluar server.", TierColors.Leave, {
             { name = SEP .. " Username",     value = "**" .. pName .. "**",              inline = true },
             { name = SEP .. " Total Player", value = "**" .. tostring(totalNow) .. "**", inline = true },
-        }, nil, avatarUrl, mentionStr, "leave")
+        }, nil, avatarUrl, "leave")
 
         LeaveTimers[pId] = true
         task.spawn(function()
             task.wait(600)
             if LeaveTimers[pId] then
                 LeaveTimers[pId] = nil
-                local notBackContent = BuildContent(mentionStr, "notback")
+                local notBackContent = BuildContent("notback")
                 PostWebhook(WEBHOOK_URL, {
                     username   = "BLOX Gank",
                     avatar_url = WEBHOOK_AVATAR,
@@ -1714,10 +1753,6 @@ local function CreateUI()
 
     local savedConfig = LoadConfig()
 
-    -- Webhook inputs + toggle ditaruh di ScrollingFrame + UIListLayout supaya otomatis
-    -- nyusun elemen berurutan tanpa nabrak, dan bisa di-scroll kalau kepanjangan.
-    -- Tombol aksi (CHECK PLAYER / START) tetap fixed di bawah, di luar scroll,
-    -- biar selalu keliatan & gampang dijangkau.
     local FRAME_H = 430
     local frame = Instance.new("Frame")
     frame.Name             = "Main"
@@ -1763,9 +1798,6 @@ local function CreateUI()
         frame.Visible = false
     end)
 
-    -- ============================================================
-    --  FLOATING LOGO INDICATOR
-    -- ============================================================
     local floatLogo = Instance.new("ImageButton")
     floatLogo.Name             = "BloxGankFloatLogo"
     floatLogo.Size             = UDim2.new(0, 46, 0, 46)
@@ -1886,10 +1918,7 @@ local function CreateUI()
     statusLabel.Font = Enum.Font.Gotham; statusLabel.TextSize = 11
     statusLabel.TextXAlignment = Enum.TextXAlignment.Left; statusLabel.Parent = frame
 
-    -- ============================================================
-    --  SCROLLABLE CONTENT AREA (webhook inputs + toggle)
-    -- ============================================================
-    local BOTTOM_BLOCK_H = 108 -- tinggi area tombol aksi di bawah (fixed, di luar scroll)
+    local BOTTOM_BLOCK_H = 108
     local SCROLL_Y        = 64
 
     local content = Instance.new("ScrollingFrame")
@@ -1909,8 +1938,6 @@ local function CreateUI()
     listLayout.Padding       = UDim.new(0, 4)
     listLayout.Parent        = content
 
-    -- "AutomaticCanvasSize" gak semua executor/game client dukung, jadi canvas size
-    -- dihitung MANUAL tiap kali AbsoluteContentSize berubah -- kompatibel di executor manapun.
     local function UpdateCanvasSize()
         content.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
     end
@@ -1944,7 +1971,6 @@ local function CreateUI()
         return box
     end
 
-    -- Toggle row: label kiri + switch kanan dalam satu baris ringkas.
     local function MakeToggleRow(labelText, defaultOn, onChange)
         local row = Instance.new("Frame")
         row.Size = UDim2.new(1, 0, 0, 22)
@@ -1995,14 +2021,14 @@ local function CreateUI()
     local inputJoin  = MakeInput("Paste webhook join/leave...")
     MakeLabel("🐋 Webhook Secret Fish")
     local inputFish  = MakeInput("Paste webhook secret fish...")
-    MakeLabel("📊 Webhook Stats (fallback Check Player)")
-    local inputStats = MakeInput("Paste webhook stats...")
     MakeLabel("🎯 Webhook Event Hunt (Role Nelayan)")
     local inputEvent = MakeInput("Kosong = pakai webhook join/leave...")
     MakeLabel("🧬 Webhook Mutasi List")
     local inputMutasi = MakeInput("Kosong = pakai webhook secret fish...")
     MakeLabel(EMOJI_CHECK .. " Webhook Check Player")
-    local inputCheckplayer = MakeInput("Kosong = pakai webhook stats...")
+    local inputCheckplayer = MakeInput("Kosong = pakai webhook join/leave...")
+    MakeLabel(EMOJI_THUNDER_TITLE .. " Webhook Elemental Balancer")
+    local inputBalancer = MakeInput("Kosong = pakai webhook event hunt...")
     MakeLabel("⚖️ Webhook Galatama")
     local inputGalatama = MakeInput("Kosong = pakai webhook secret fish...")
 
@@ -2011,8 +2037,6 @@ local function CreateUI()
         saveEnabled = enabled
     end)
 
-    -- Toggle ON/OFF khusus buat notifikasi Event Hunt (treasure/thunderzilla/crystal).
-    -- Gak ngaruh ke fitur lain, bisa diubah kapan aja termasuk pas monitoring udah aktif.
     local eventToggle = MakeToggleRow("🔔 Notif Event Hunt", true, function(enabled)
         EVENT_NOTIF_ENABLED = enabled
     end)
@@ -2020,17 +2044,14 @@ local function CreateUI()
     if savedConfig then
         if savedConfig.webhook_join        and savedConfig.webhook_join        ~= "" then inputJoin.Text        = savedConfig.webhook_join        end
         if savedConfig.webhook_fish        and savedConfig.webhook_fish        ~= "" then inputFish.Text        = savedConfig.webhook_fish        end
-        if savedConfig.webhook_stats       and savedConfig.webhook_stats       ~= "" then inputStats.Text       = savedConfig.webhook_stats       end
         if savedConfig.webhook_event       and savedConfig.webhook_event       ~= "" then inputEvent.Text       = savedConfig.webhook_event       end
         if savedConfig.webhook_mutasi      and savedConfig.webhook_mutasi      ~= "" then inputMutasi.Text      = savedConfig.webhook_mutasi      end
         if savedConfig.webhook_checkplayer and savedConfig.webhook_checkplayer ~= "" then inputCheckplayer.Text = savedConfig.webhook_checkplayer end
+        if savedConfig.webhook_balancer    and savedConfig.webhook_balancer    ~= "" then inputBalancer.Text    = savedConfig.webhook_balancer    end
         if savedConfig.webhook_galatama    and savedConfig.webhook_galatama    ~= "" then inputGalatama.Text    = savedConfig.webhook_galatama    end
         saveToggle.setState(true)
     end
 
-    -- ============================================================
-    --  TOMBOL AKSI (fixed di bawah, di luar scroll area)
-    -- ============================================================
     local BTN_Y1 = FRAME_H - BOTTOM_BLOCK_H          -- CHECK PLAYER
     local BTN_Y2 = BTN_Y1 + 26 + 6                    -- GALATAMA LB
     local BTN_Y3 = BTN_Y2 + 26 + 6                    -- START MONITORING
@@ -2101,13 +2122,13 @@ local function CreateUI()
 
         WEBHOOK_URL = inputJoin.Text
         if inputFish.Text:find("discord.com/api/webhooks")        then WEBHOOK_FISH        = inputFish.Text        end
-        if inputStats.Text:find("discord.com/api/webhooks")       then WEBHOOK_STATS       = inputStats.Text       end
         if inputEvent.Text:find("discord.com/api/webhooks")       then WEBHOOK_EVENT       = inputEvent.Text       end
         if inputMutasi.Text:find("discord.com/api/webhooks")      then WEBHOOK_MUTASI      = inputMutasi.Text      end
         if inputCheckplayer.Text:find("discord.com/api/webhooks") then WEBHOOK_CHECKPLAYER = inputCheckplayer.Text end
+        if inputBalancer.Text:find("discord.com/api/webhooks")    then WEBHOOK_BALANCER    = inputBalancer.Text    end
         if inputGalatama.Text:find("discord.com/api/webhooks")    then WEBHOOK_GALATAMA    = inputGalatama.Text    end
 
-        if saveEnabled then SaveConfig(WEBHOOK_URL, WEBHOOK_FISH, WEBHOOK_STATS, WEBHOOK_EVENT, WEBHOOK_MUTASI, WEBHOOK_CHECKPLAYER, WEBHOOK_GALATAMA) end
+        if saveEnabled then SaveConfig(WEBHOOK_URL, WEBHOOK_FISH, WEBHOOK_EVENT, WEBHOOK_MUTASI, WEBHOOK_CHECKPLAYER, WEBHOOK_BALANCER, WEBHOOK_GALATAMA) end
 
         SCRIPT_ACTIVE = true
         statusDot.BackgroundColor3 = Color3.fromRGB(0,220,100)
@@ -2118,12 +2139,10 @@ local function CreateUI()
 
         SetFloatStatus(true)
 
-        for _, box in ipairs({ inputJoin, inputFish, inputStats, inputEvent, inputMutasi, inputCheckplayer, inputGalatama }) do
+        for _, box in ipairs({ inputJoin, inputFish, inputEvent, inputMutasi, inputCheckplayer, inputBalancer, inputGalatama }) do
             box.TextEditable = false
         end
         saveToggle.hitbox.Active = false
-        -- NOTE: eventToggle SENGAJA tetap aktif setelah monitoring jalan,
-        -- biar notif Event Hunt bisa di-ON/OFF kapan aja tanpa stop monitoring.
 
         StartMonitoring()
     end)
