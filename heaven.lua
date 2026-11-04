@@ -132,9 +132,9 @@ local MythicFishList = {
 -- Ikan tier SECRET yang kena hitungan poin Galatama.
 local GalatamaFishPoints = {
     ["Soulveil Koi"]       = 2000,
-    ["Sky Blue Talon Shark"]   = 1000000,
-    ["Midnight Blue Wildes Shark"]   = 1000000,
-    ["Soulwake express"]   = 180000,
+    ["Sky Blue Talon Shark"]   = 100000,
+    ["Midnight Blue Wildes Shark"]   = 100000,
+    ["Soulwake express"]   = 18000,
 }
 
 -- Bonus mutasi buat ikan tier SECRET: FLAT, semua jenis mutasi dapet poin yang sama,
@@ -172,7 +172,7 @@ local FishChanceData = {
     ["Bloodmoon Whale"]           = "1 in 5M",
     ["Lochness Monster"]          = "1 in 3M",
     ["Monster Shark"]             = "1 in 2.5M",
-    ["Eerie Shark"]               = "1 in 250K",
+    ["Eerie Shark"]              = "1 in 250K",
     ["Great Whale"]               = "1 in 900K",
     ["Frostborn Shark"]           = "1 in 500K",
     ["Thin Armor Shark"]          = "1 in 300K",
@@ -275,6 +275,9 @@ local FishChanceData = {
     ["Soulwake Express"] = "1 in 18M",
 }
 
+-- FIX #1: NP sebelumnya nggak pernah didefinisikan (nil) -> script crash pas load
+local NP = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/"
+
 local FishImageURL = {
     ["Frostborn Shark"]          = NP .. "bg_frostborn.png",
     ["Crystal Goliath"]          = NP .. "bg_crystalgoliath.png",
@@ -354,36 +357,35 @@ local FishImageURL = {
     ["Ragnarex"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_ragnarex.png",
     ["Colossal Shipwreck Crab"]  = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_colshipcrab.png",
     ["Astrelle"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_astrelle.png",
-["Astralune"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_astralune.png",
-["Moonwake Ray"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_moonwake.png",
-["Pelagon"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_pelagon.png",
-["Starglass Guardian"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_starglass.png",
-["Riftborn Arowana"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_riftborn.png",
-["Pyrocoil"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_pyrocoil.png",
-["Stormshell Brute"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_stormshell.png",
-["Wintertusk Mammofin"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_wintertusk.png",
-["Crimson Dreadtusk"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_crimsondread.png",
-["Overlord Hydra"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_elementalhydra.png",
-["Tribunal Withering core"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_tribunal.png",
-["Ashen Kingfish"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_ashenkingfish.webp",
-["Everbloom"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_everbloom.webp",
-["Mr Money Bags"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_mrmoneybags.webp",
-["Elemental Hydra"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_overlordhydra.png",
-["Velobyte"]       = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_velobyte.png",
-["Cenobyte.EXE"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_cenobyte.png",
-["Shellshock X"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_shellshockx.png",
-["Gigabyte"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_gigabyte.png",
-["Jellybeam"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_jellybeam.png",
-["Spiritborn Axolotl"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_spiritbornaxolotl.png",
-["Sweettooth gourdling"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/SweetTooth%20Gourdling.png",
-["Mawsoleum"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Mawsoleum.png",
-["Phantom Dead Zombie Shark"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Phantom%20Dead%20Zombie%20Shark.png",
-["Vineyard Kraken"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5176.PNG",
-["Soulveil Koi"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5177.PNG",
-["Midnight Blue Wildes Shark"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5178.PNG",
-["Sky Blue Talon Shark"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5179.PNG",
-["Soulwake Express"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_soulwakeexpress.jpg",
-    
+    ["Astralune"]                = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_astralune.png",
+    ["Moonwake Ray"]             = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_moonwake.png",
+    ["Pelagon"]                  = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_pelagon.png",
+    ["Starglass Guardian"]       = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_starglass.png",
+    ["Riftborn Arowana"]         = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_riftborn.png",
+    ["Pyrocoil"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_pyrocoil.png",
+    ["Stormshell Brute"]         = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_stormshell.png",
+    ["Wintertusk Mammofin"]      = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_wintertusk.png",
+    ["Crimson Dreadtusk"]        = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_crimsondread.png",
+    ["Overlord Hydra"]           = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_elementalhydra.png",
+    ["Tribunal Withering core"]  = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_tribunal.png",
+    ["Ashen Kingfish"]           = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_ashenkingfish.webp",
+    ["Everbloom"]                = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_everbloom.webp",
+    ["Mr Money Bags"]            = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_mrmoneybags.webp",
+    ["Elemental Hydra"]          = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_overlordhydra.png",
+    ["Velobyte"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_velobyte.png",
+    ["Cenobyte.EXE"]             = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_cenobyte.png",
+    ["Shellshock X"]             = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_shellshockx.png",
+    ["Gigabyte"]                 = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_gigabyte.png",
+    ["Jellybeam"]                = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_jellybeam.png",
+    ["Spiritborn Axolotl"]       = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_spiritbornaxolotl.png",
+    ["Sweettooth gourdling"]     = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/SweetTooth%20Gourdling.png",
+    ["Mawsoleum"]                = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Mawsoleum.png",
+    ["Phantom Dead Zombie Shark"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Phantom%20Dead%20Zombie%20Shark.png",
+    ["Vineyard Kraken"]          = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5176.PNG",
+    ["Soulveil Koi"]             = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5177.PNG",
+    ["Midnight Blue Wildes Shark"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5178.PNG",
+    ["Sky Blue Talon Shark"]     = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5179.PNG",
+    ["Soulwake Express"]         = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_soulwakeexpress.jpg",
 }
 
 local FishImageURLLower = {}
@@ -669,8 +671,8 @@ local function FindMythicFish(fishName)
     return nil
 end
 
--- Deteksi ikan tier MYTHIC khusus Galatama (Pailatee / SPFin Shark), sama persis
--- logic-nya kayak FindSecretFish tapi buat GalatamaMythicList, plus deteksi mutasi-nya.
+-- Deteksi ikan tier MYTHIC khusus Galatama, sama persis logic-nya kayak
+-- FindSecretFish tapi buat GalatamaMythicList, plus deteksi mutasi-nya.
 local function FindGalatamaMythicFish(fishName)
     local lower = string.lower(fishName)
     for _, baseName in ipairs(GalatamaMythicList) do
@@ -1129,6 +1131,31 @@ end
 --  GALATAMA LEADERBOARD
 -- ============================================================
 
+-- FIX #3: teks aturan dibikin dinamis dari tabel poin, jadi nggak nampilin ikan/poin lama
+local function BuildGalatamaRulesText()
+    local function listFrom(pointsTable)
+        local arr = {}
+        for name, pts in pairs(pointsTable) do
+            table.insert(arr, { name = name, pts = pts })
+        end
+        table.sort(arr, function(a, b)
+            if a.pts == b.pts then return a.name < b.name end
+            return a.pts > b.pts
+        end)
+        local parts = {}
+        for _, e in ipairs(arr) do
+            table.insert(parts, e.name .. " (" .. FormatPoints(e.pts) .. ")")
+        end
+        return table.concat(parts, " | ")
+    end
+
+    return "```\n[SECRET] " .. listFrom(GalatamaFishPoints)
+        .. "\nBonus Mutasi Secret: semua mutasi +" .. FormatPoints(GALATAMA_SECRET_MUTASI_BONUS)
+        .. " (kecuali Big & Shiny)\n\n[MYTHIC] " .. listFrom(GalatamaMythicFishPoints)
+        .. "\nBonus Mutasi Mythic: semua mutasi +" .. FormatPoints(GALATAMA_MYTHIC_MUTASI_BONUS)
+        .. " (kecuali Big & Shiny)\n```"
+end
+
 local function SendGalatamaLeaderboard()
     local leaderData = {}
     for _, gs in pairs(GalatamaStats) do
@@ -1170,7 +1197,7 @@ local function SendGalatamaLeaderboard()
         avatar_url = WEBHOOK_AVATAR,
         embeds     = { BuildEmbed(
             "🏆 LEADERBOARD GALATAMA",
-            "```\n[SECRET] Dark Megalodon (10,000) | Coral Reaper (6,000) | Elemental Tempestray (1,000)\nBonus Mutasi Secret: semua mutasi +1,000 (kecuali Big & Shiny)\n\n[MYTHIC] Pailatee (60) | SPFin Shark (60)\nBonus Mutasi Mythic: semua mutasi +100 (kecuali Big & Shiny)\n```",
+            BuildGalatamaRulesText(),
             16766720, fields, nil, nil, "BLOX Gank Galatama"
         )},
     })
@@ -1530,9 +1557,10 @@ local function CheckAndSend(rawMsg)
         return
     end
 
+    -- FIX #2: FindRuby balikin "Ruby", sedangkan key gambar-nya "Ruby Gemstone"
     local rubyBase = FindRuby(data.fish)
     if rubyBase then
-        local imageUrl = GetFishImageURL(rubyBase) or (FishImageCache[rubyBase] and (PROXY .. "/asset/" .. FishImageCache[rubyBase]))
+        local imageUrl = GetFishImageURL("Ruby Gemstone")
         SendFishWebhook(EMOJI_RUBY .. " Ruby Gemstone!", "", TierColors.Ruby, {
             { name = SEP .. " Pemain", value = "**" .. data.player .. "**", inline = true },
             { name = SEP .. " Item",   value = "**" .. data.fish .. "**",   inline = true },
@@ -1907,17 +1935,22 @@ local function CreateUI()
     HoverTween(minBtn,   Color3.fromRGB(80,80,80),  Color3.fromRGB(60,60,60))
     HoverTween(closeBtn, Color3.fromRGB(230,70,70), Color3.fromRGB(200,50,50))
 
+    -- FIX #4: drag window sekarang support Touch (HP), bukan cuma Mouse
+    local function IsPointerStart(i)
+        return i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch
+    end
+
     local dragging, dragStart, startPos
     topBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if IsPointerStart(input) then
             dragging = true; dragStart = input.Position; startPos = frame.Position
         end
     end)
     topBar.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+        if IsPointerStart(input) then dragging = false end
     end)
     game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
             frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset+delta.X, startPos.Y.Scale, startPos.Y.Offset+delta.Y)
         end
