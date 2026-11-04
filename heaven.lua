@@ -74,7 +74,7 @@ local SEP = EMOJI_SEPARATOR
 -- ============================================================
 
 local SecretFishList = {
-    "Crystal Crab", "Orca", "Zombie Shark", "Zombie Megalodon", "Dead Zombie Shark",
+    "Crystal Crab", "Orca", "Zombie Shark", "Zombie Megalodon", "Phantom Dead Zombie Shark",
     "Blob Shark", "Ghost Shark", "Skeleton Narwhal", "Ghost Worm Fish", "Worm Fish",
     "Megalodon", "1x1x1x1 Comet Shark", "Bloodmoon Whale", "Lochness Monster",
     "Monster Shark", "Eerie Shark", "Great Whale", "Frostborn Shark", "Thin Armor Shark",
@@ -92,23 +92,23 @@ local SecretFishList = {
     "Sea Eater", "Thunderzilla", "Iridesca", "Frostbite Leviathan", "Fluorivane",
     "Cerulean Dragon", "Machodon", "Scorching Veinmaw", "Crystalline Behemoth",
     "Frostmoon Whale", "Crystal Goliath", "Eggy Enchant Stone", "Dark Megalodon",
-    "Elemental Tempestray", "Glacial Serpent", "Caustic Maw", "Coral Reaper",
-    "Sunken Hadalith", "Trench Warden", "Caeruleum Razerback", "Two-headed shark", "Ragnarex",
-    "Colossal Shipwreck Crab", "Astrelle", "Moonwake Ray", "Astralune", "Starglass Guardian", "Pelagon", "Crimson Dreadtusk", "Riftborn Arowana",
-    "Pyrocoil", "Stormshell Brute", "Wintertusk Mammofin", "Elemental Hydra", "Overlord Hydra", "Tribunal Withering core", "Ashen Kingfish", "Everbloom", "Mr Money Bags", "Velobyte", "Cenobyte.EXE", "Shellshock X",
+    "Elemental Tempestray", "Glacial Serpent", "Caustic Maw", "Coral Reaper", "Soulwake Express",
+    "Sunken Hadalith", "Trench Warden", "Caeruleum Razerback", "Two-headed shark", "Ragnarex", "Mawsoleum", "Sweettooth gourdling", "Soulveil Koi", "Midnight Blue Wildes Shark", "Sky Blue Talon Shark",
+    "Colossal Shipwreck Crab", "Astrelle", "Moonwake Ray", "Astralune", "Starglass Guardian", "Pelagon", "Crimson Dreadtusk", "Riftborn Arowana", "Gigabyte", "Jellybeam", "Vineyard Kraken",
+    "Pyrocoil", "Stormshell Brute", "Wintertusk Mammofin", "Elemental Hydra", "Overlord Hydra", "Tribunal Withering core", "Ashen Kingfish", "Everbloom", "Mr Money Bags", "Velobyte", "Cenobyte.EXE", "Shellshock X", "Spiritborn Axolotl",
 }
 
 local ForgottenList = {
-    "Sea Eater", "Thunderzilla", "Iridesca", "Frostbite Leviathan", "Fluorivane",
+    "Sea Eater", "Thunderzilla", "Iridesca", "Frostbite Leviathan", "Fluorivane", "Mawsoleum", "Soulwake express",
     "Cerulean Dragon", "Crystalline Behemoth", "Trench Warden", "Ragnarex", "Astralune", "Crimson Dreadtusk", "Elemental Hydra", "Overlord Hydra", "Everbloom","Cenobyte.EXE",
 }
+
 
 local MutasiList = {
     "Noob", "Fairy Dust", "Holographic", "Gemstone", "Fire", "Color Burn",
     "BloodMoon", "Binary", "Lightning", "Disco", "Festive", "Radioactive", "Moon Fragment", "Abyssal", "Cosmic", "Equinox", "Glitch",
-    "Elemental", "Solar", "1x1x1", "Artic frost", "8-Bit",
+    "Elemental", "Solar", "1x1x1", "Artic frost", "8-Bit", "Haunted",
 }
-
 -- whitelist nama spesies yang ke-false-positive kedetect sebagai mutasi (dibuang dulu sebelum scan mutasi)
 local MutasiFalsePositiveSpecies = {
     "abyssal maw angler",
@@ -131,9 +131,10 @@ local MythicFishList = {
 
 -- Ikan tier SECRET yang kena hitungan poin Galatama.
 local GalatamaFishPoints = {
-    ["Velobyte"]       = 5000,
-    ["Shellshock X"]   = 3000,
-    ["Cenobyte.EXE"]   = 30000,
+    ["Soulveil Koi"]       = 2000,
+    ["Sky Blue Talon Shark"]   = 1000000,
+    ["Midnight Blue Wildes Shark"]   = 1000000,
+    ["Soulwake express"]   = 180000,
 }
 
 -- Bonus mutasi buat ikan tier SECRET: FLAT, semua jenis mutasi dapet poin yang sama,
@@ -143,16 +144,13 @@ local GALATAMA_SECRET_MUTASI_BONUS = 1000
 -- Ikan tier MYTHIC khusus Galatama (terpisah dari MythicFishList di atas, yang itu
 -- cuma buat embed merah polos "Shiny Hammerhead Shark") + poin base-nya.
 local GalatamaMythicList = {
-    "Toytech angler", "F-15H", "Mediclaw", "Circuit Shark", "Whaleware", "AX-0TL",
+    "Tombweeper", "Dollfin belle", "Dr.Plagueapus",
 }
 
 local GalatamaMythicFishPoints = {
-    ["Toytech angler"]    = 100,
-    ["F-15H"]             = 100,
-    ["Mediclaw"]          = 100,
-    ["Circuit Shark"]     = 100,
-    ["Whaleware"]         = 100,
-    ["AX-0TL"]            = 100,
+    ["Tombweeper"]     = 50,
+    ["Dollfin belle"]  = 50,
+    ["Dr.Plagueapus"]  = 50,
 }
 
 -- Bonus mutasi buat ikan tier MYTHIC Galatama: FLAT juga, kecuali Big & Shiny.
@@ -161,7 +159,7 @@ local GALATAMA_MYTHIC_MUTASI_BONUS = 50
 local FishChanceData = {
     ["Crystal Crab"]              = "1 in 750K",
     ["Orca"]                      = "1 in 1.5M",
-    ["Zombie Shark"]              = "1 in 250K",
+    ["Phantom Dead Zombie Shark"] = "1 in 500K",
     ["Zombie Megalodon"]          = "1 in 4M",
     ["Dead Zombie Shark"]         = "1 in 500K",
     ["Blob Shark"]                = "1 in 250K",
@@ -261,14 +259,21 @@ local FishChanceData = {
     ["Ashen Kingfish"] = "1 in 3.5M",
     ["Everbloom"] = "1 in 20M",
     ["Mr Money Bags"] = "1 in 4M",
-    ["Tribunal Withering Core"] = "1 in 5M",
+    ["Tribunal Withering core"] = "1 in 5M",
     ["Velobyte"] = "1 in 5M",
     ["Shellshock X"] = "1 in 3M",
-    ["Cenobyte.EXE"] = "1 in 30M",
-
+    ["Cenobyte.EXE"] = "1 in 25M",
+    ["Gigabyte"] = "1 in 4.5M",
+    ["Jellybeam"] = "1 in 4M",
+    ["Spiritborn Axolotl"] = "1 in 4M",
+    ["Mawsoleum"] = "1 in 20M",
+    ["Sweettooth gourdling"] = "1 in 3M",
+    ["Vineyard Kraken"] = "1 in 5M",
+    ["Soulveil Koi"] = "1 in 3M",
+    ["Midnight Blue Wildes Shark"] = "1 in ?",
+    ["Sky Blue Talon Shark"] = "1 in ?",
+    ["Soulwake Express"] = "1 in 18M",
 }
-
-local NP = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/"
 
 local FishImageURL = {
     ["Frostborn Shark"]          = NP .. "bg_frostborn.png",
@@ -358,15 +363,26 @@ local FishImageURL = {
 ["Stormshell Brute"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_stormshell.png",
 ["Wintertusk Mammofin"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_wintertusk.png",
 ["Crimson Dreadtusk"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_crimsondread.png",
-["Elemental Hydra"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_overlordhydra.png",
+["Overlord Hydra"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_elementalhydra.png",
 ["Tribunal Withering core"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_tribunal.png",
 ["Ashen Kingfish"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_ashenkingfish.webp",
 ["Everbloom"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_everbloom.webp",
 ["Mr Money Bags"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_mrmoneybags.webp",
-["Overlord Hydra"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_elementalhydra.png",
+["Elemental Hydra"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_overlordhydra.png",
 ["Velobyte"]       = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_velobyte.png",
 ["Cenobyte.EXE"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_cenobyte.png",
 ["Shellshock X"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_shellshockx.png",
+["Gigabyte"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_gigabyte.png",
+["Jellybeam"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_jellybeam.png",
+["Spiritborn Axolotl"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_spiritbornaxolotl.png",
+["Sweettooth gourdling"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/SweetTooth%20Gourdling.png",
+["Mawsoleum"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Mawsoleum.png",
+["Phantom Dead Zombie Shark"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/Phantom%20Dead%20Zombie%20Shark.png",
+["Vineyard Kraken"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5176.PNG",
+["Soulveil Koi"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5177.PNG",
+["Midnight Blue Wildes Shark"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5178.PNG",
+["Sky Blue Talon Shark"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/IMG_5179.PNG",
+["Soulwake Express"] = "https://raw.githubusercontent.com/revkatomy-max/new-pisit-image/main/bg_soulwakeexpress.jpg",
     
 }
 
